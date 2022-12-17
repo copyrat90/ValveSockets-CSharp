@@ -1,6 +1,8 @@
 using CppSharp;
 using CppSharp.AST;
 using CppSharp.Generators;
+using System;
+using System.IO;
 
 namespace LibraryGenerator;
 

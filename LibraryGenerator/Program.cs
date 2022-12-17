@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using CppSharp;
+using System;
+using System.IO;
+using System.Threading;
 
 namespace LibraryGenerator;
 
