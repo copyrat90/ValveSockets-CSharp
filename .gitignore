@@ -290,3 +290,11 @@ __pycache__/
 
 # Generated C# files
 *.g.cs
+
+# Generator directories
+gen/clangsharp
+gen/GameNetworkingSockets
+gen/llvm-project
+
+# Allow PInvoke generator response files
+!gen/*.rsp
