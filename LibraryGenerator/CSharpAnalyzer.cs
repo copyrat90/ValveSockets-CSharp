@@ -1,3 +1,4 @@
+using LibraryGenerator.SyntaxRewriter;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -11,7 +12,7 @@ public class CSharpAnalyzer
     private readonly CSharpCompilation _compilation;
     private readonly IReadOnlyCollection<CSharpSyntaxRewriter> _syntaxRewriter = new List<CSharpSyntaxRewriter>
     {
-
+        new PragmaRemover()
     };
 
     public CSharpAnalyzer(string projectDirectory)
@@ -20,8 +21,9 @@ public class CSharpAnalyzer
 
         foreach (string filePath in Directory.EnumerateFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
         {
-            SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath));
-            _compilation.AddSyntaxTrees(tree);
+            Console.WriteLine($"\tAdding {Path.GetFileName(filePath)} to syntax tree.");
+            SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath), path: filePath);
+            _compilation = _compilation.AddSyntaxTrees(tree);
         }
     }
 
@@ -33,7 +35,14 @@ public class CSharpAnalyzer
 
             foreach (SyntaxTree sourceTree in _compilation.SyntaxTrees)
             {
-                rewriter.Visit(sourceTree.GetRoot());
+                var newSourceRoot = rewriter.Visit(sourceTree.GetRoot());
+
+                if (newSourceRoot != sourceTree.GetRoot())
+                {
+                    using FileStream streamWriter = File.OpenWrite(sourceTree.FilePath);
+                    using TextWriter writer = new StreamWriter(streamWriter);
+                    newSourceRoot.WriteTo(writer);
+                }
             }
         }
     }
