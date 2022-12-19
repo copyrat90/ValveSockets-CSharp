@@ -9,7 +9,7 @@ namespace LibraryGenerator;
 
 public class CSharpAnalyzer
 {
-    private readonly CSharpCompilation _compilation;
+    private CSharpCompilation _compilation;
     private readonly IReadOnlyCollection<CSharpSyntaxRewriter> _syntaxRewriter = new List<CSharpSyntaxRewriter>
     {
         new PragmaRemover()
@@ -29,6 +29,8 @@ public class CSharpAnalyzer
 
     public void FixFiles()
     {
+        CSharpCompilation newCompilation = _compilation;
+
         foreach (CSharpSyntaxRewriter rewriter in _syntaxRewriter)
         {
             Console.WriteLine($"Running SyntaxRewriter: {rewriter}");
@@ -42,8 +44,12 @@ public class CSharpAnalyzer
                     using FileStream streamWriter = File.OpenWrite(sourceTree.FilePath);
                     using TextWriter writer = new StreamWriter(streamWriter);
                     newSourceRoot.WriteTo(writer);
+
+                    newCompilation = newCompilation.ReplaceSyntaxTree(sourceTree, sourceTree.WithChangedText(newSourceRoot.GetText()));
                 }
             }
+
+            _compilation = newCompilation;
         }
     }
 }
