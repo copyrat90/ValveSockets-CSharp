@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LibraryGenerator.CppSharp;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -83,7 +84,12 @@ public static class Program
 
         // Phase 1: Install dotnet tool
 
-        ProcessHelper.InstallGlobalDotnetTool(PInvokeGenerator);
+        if (!ProcessHelper.InstallGlobalDotnetTool(PInvokeGenerator))
+        {
+            Console.WriteLine($"Failed to install dotnet tool {PInvokeGenerator} globally. Aborting.");
+
+            return 1;
+        }
 
         // Phase 2: Clone repos
 
@@ -192,7 +198,7 @@ public static class Program
 
         Directory.CreateDirectory(outputDir);
 
-        Console.WriteLine($"Generating {GNSRepo} bindings...");
+        Console.WriteLine($"[ClangSharp] Generating {GNSRepo} bindings...");
 
         int generatorResult = ProcessHelper.InvokeWithEnvVars(
             PInvokeGenerator,
@@ -210,14 +216,44 @@ public static class Program
             return 1;
         }
 
-        Console.WriteLine("Success!");
+        Console.WriteLine("Success!\n");
 
-        // Phase 6: Run CppSharp source generation passes
+        // Phase 6: Run CppSharp source generator
 
-        // Console.WriteLine("\nGenerating bindings...");
+        Console.WriteLine($"[CppSharp] Generating {GNSRepo} bindings...");
 
-        // ConsoleLibraryDriver.Run(new GameNetworkingSocketsLibrary(repoDir, buildDir, outputDir));
-        // ConsoleDriver.Run(new GameNetworkingSocketsLibrary(repoDir, buildDir, outputDir));
+        ConsoleLibraryDriver.Run(new GameNetworkingSocketsLibrary(Path.Combine(workDir, GNSRepo), outputDir));
+
+        File.Delete(Path.Combine(outputDir, $"{OutputName}-symbols.cpp"));
+
+        foreach (string filePath in Directory.EnumerateFiles(outputDir, "i*.cs"))
+        {
+            Span<char> filename = Path.GetFileName(filePath).ToCharArray();
+
+            filename[0] = char.ToUpper(filename[0]);
+            filename[1] = char.ToUpper(filename[1]);
+            filename[6] = char.ToUpper(filename[6]);
+            filename[16] = char.ToUpper(filename[16]);
+
+            string newFilePath = Path.Combine(outputDir, new string(filename));
+
+            File.Delete(newFilePath);
+            File.Move(filePath, newFilePath);
+        }
+
+        Console.WriteLine("Success!\n");
+
+        // Phase 7: Clean up generated files using CSharpAnalyzer
+
+        Console.WriteLine("Initializing CSharpAnalyzer...");
+
+        CSharpAnalyzer analyzer = new(outputDir);
+
+        Console.WriteLine("Cleaning generated files...");
+
+        analyzer.FixFiles();
+
+        Console.WriteLine("Done!");
 
         return 0;
     }

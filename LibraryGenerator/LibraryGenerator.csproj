@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CppSharp" Version="1.0.1" />
+      <PackageReference Include="CppSharp" Version="1.0.39.31128" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
     </ItemGroup>
 
 </Project>
