@@ -12,7 +12,9 @@ public class CSharpAnalyzer
     private CSharpCompilation _compilation;
     private readonly IReadOnlyCollection<CSharpSyntaxRewriter> _syntaxRewriter = new List<CSharpSyntaxRewriter>
     {
-        new PragmaRemover()
+        new PragmaRemover(),
+        new DllImportRewriter(),
+        new UnsafeRewriter()
     };
 
     public CSharpAnalyzer(string projectDirectory)
