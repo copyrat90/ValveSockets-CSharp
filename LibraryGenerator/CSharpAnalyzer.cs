@@ -39,7 +39,7 @@ public class CSharpAnalyzer
 
             foreach (SyntaxTree sourceTree in _compilation.SyntaxTrees)
             {
-                var newSourceRoot = rewriter.FixupVisit(rewriter.Visit(sourceTree.GetRoot()));
+                var newSourceRoot = rewriter.FixupVisit(rewriter.Visit(sourceTree.GetRoot()))!;
 
                 if (newSourceRoot != sourceTree.GetRoot())
                 {

@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,6 +13,16 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private bool _needsCompilerServices;
 
     private static bool AttributeIsDllImport(AttributeSyntax attribute) => attribute.Name.ToString() == "DllImport";
+
+    public override SyntaxNode VisitUsingDirective(UsingDirectiveSyntax node)
+    {
+        if (node.Name.ToString() == "System.Runtime.CompilerServices")
+        {
+            _hasCompilerServices = true;
+        }
+
+        return node;
+    }
 
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
@@ -31,6 +42,9 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         var entryPointArg =
             nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(argument => argument.ToString().StartsWith("EntryPoint"), null);
 
+        var callConvArg =
+            nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(argument => argument.ToString().StartsWith("CallingConvention"), null);
+
         if (entryPointArg != null)
         {
             newArgumentList = newArgumentList.AddArguments(nodeAttribute.ArgumentList!.Arguments.First(), entryPointArg);
@@ -49,7 +63,52 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             })).WithTriviaFrom(nodeAttributeLists)
         };
 
-        // TODO: Deal with CallingConvention
+        if (callConvArg != null)
+        {
+            NameSyntax callConvAttributeName = SyntaxFactory.IdentifierName("UnmanagedCallConv");
+            NameEqualsSyntax callConvsArgumentName = SyntaxFactory.NameEquals("CallConvs");
+            ExpressionSyntax callConvsArgumentValue = null;
+
+            switch (callConvArg.Expression.ToString())
+            {
+                case "__CallingConvention.Cdecl":
+                case "CallingConvention.Cdecl":
+                    callConvsArgumentValue = SyntaxFactory.ParseExpression("new [] { typeof(CallConvCdecl) }");
+                    break;
+
+                case "CallingConvention.ThisCall":
+                    callConvsArgumentValue = SyntaxFactory.ParseExpression("new [] { typeof(CallConvThiscall) }");
+                    break;
+
+                default:
+                    Console.WriteLine($"\tNo conversion found for calling convention: {callConvArg.Expression}");
+                    break;
+            }
+
+            if (callConvsArgumentValue != null)
+            {
+                if (!_hasCompilerServices)
+                {
+                    _needsCompilerServices = true;
+                }
+
+                var lastAttribute = node.AttributeLists.Last();
+                var lastAttributeLeadingTrivia = lastAttribute.GetLeadingTrivia();
+
+                if (lastAttributeLeadingTrivia.First().IsKind(SyntaxKind.EndOfLineTrivia))
+                {
+                    lastAttributeLeadingTrivia = lastAttributeLeadingTrivia.RemoveAt(0);
+                }
+
+                newAttributeLists.Add(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[]
+                {
+                    SyntaxFactory.Attribute(callConvAttributeName, SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(new []
+                    {
+                        SyntaxFactory.AttributeArgument(callConvsArgumentName, null, callConvsArgumentValue)
+                    })))
+                })).WithTrailingTrivia(lastAttribute.GetTrailingTrivia()).WithLeadingTrivia(lastAttributeLeadingTrivia));
+            }
+        }
 
         foreach (AttributeListSyntax attributeList in node.AttributeLists)
         {
