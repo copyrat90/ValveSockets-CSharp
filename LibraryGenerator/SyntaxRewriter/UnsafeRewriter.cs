@@ -6,6 +6,14 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    private RefTypeSyntax RewriteMethodPointerType(PointerTypeSyntax node)
+    {
+        return SyntaxFactory.RefType(
+            SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword,
+                SyntaxFactory.TriviaList(SyntaxFactory.Space)),
+            node.ElementType.WithTriviaFrom(node));
+    }
+
     private ParameterListSyntax VisitMethodParameterList(ParameterListSyntax node)
     {
         bool changedParameter = false;
@@ -13,31 +21,15 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         foreach (ParameterSyntax parameter in node.Parameters)
         {
-            if (parameter.Type.IsKind(SyntaxKind.PointerType))
+            if (parameter.Type.IsKind(SyntaxKind.PointerType) && parameter.Type is PointerTypeSyntax pointerParam)
             {
-                if (parameter.Type.ToString() == "void*")
-                {
-                    // TODO: Deal with NativeTypeName attributes
-
-                    if (!parameter.AttributeLists.Any())
-                    {
-                        continue;
-                    }
-                }
-
-                var newParameter = parameter.WithType(SyntaxFactory.RefType(
-                    SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword,
-                        SyntaxFactory.TriviaList(SyntaxFactory.Space)),
-                    SyntaxFactory.ParseTypeName(parameter.Type.ToString()[..^1]).WithTriviaFrom(parameter.Type))
-                );
-
-                parameterList.Add(newParameter);
+                parameterList = parameterList.Add(parameter.WithType(RewriteMethodPointerType(pointerParam)));
                 changedParameter = true;
 
                 continue;
             }
 
-            parameterList.Add(parameter);
+            parameterList = parameterList.Add(parameter);
         }
 
         return changedParameter ? node.WithParameters(parameterList) : node;
@@ -49,6 +41,11 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         {
             foreach (var childNode in node.ChildNodes())
             {
+                if (childNode.IsKind(SyntaxKind.PointerType) && childNode is PointerTypeSyntax pointerType)
+                {
+                    node = node.ReplaceNode(pointerType, RewriteMethodPointerType(pointerType));
+                }
+
                 if (childNode.IsKind(SyntaxKind.ParameterList) && childNode is ParameterListSyntax parameterList)
                 {
                     var newParameterList = VisitMethodParameterList(parameterList);
