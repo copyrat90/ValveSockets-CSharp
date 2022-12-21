@@ -18,6 +18,7 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 if (parameter.Type.ToString() == "void*")
                 {
                     // TODO: Deal with NativeTypeName attributes
+
                     if (!parameter.AttributeLists.Any())
                     {
                         continue;
@@ -25,8 +26,9 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 }
 
                 var newParameter = parameter.WithType(SyntaxFactory.RefType(
-                        SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword, SyntaxFactory.TriviaList(SyntaxFactory.Space)),
-                        SyntaxFactory.ParseTypeName(parameter.Type.ToString()[..^1]).WithTriviaFrom(parameter.Type))
+                    SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword,
+                        SyntaxFactory.TriviaList(SyntaxFactory.Space)),
+                    SyntaxFactory.ParseTypeName(parameter.Type.ToString()[..^1]).WithTriviaFrom(parameter.Type))
                 );
 
                 parameterList.Add(newParameter);
@@ -45,8 +47,6 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     {
         if (node.IsKind(SyntaxKind.MethodDeclaration))
         {
-            var newNode = node;
-
             foreach (var childNode in node.ChildNodes())
             {
                 if (childNode.IsKind(SyntaxKind.ParameterList) && childNode is ParameterListSyntax parameterList)
@@ -55,12 +55,10 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
                     if (parameterList != newParameterList)
                     {
-                        newNode = newNode.ReplaceNode(parameterList, newParameterList);
+                        node = node.ReplaceNode(parameterList, newParameterList);
                     }
                 }
             }
-
-            return newNode;
         }
 
         return node;
