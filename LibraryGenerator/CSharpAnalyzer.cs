@@ -21,7 +21,7 @@ public class CSharpAnalyzer
 
         foreach (string filePath in Directory.EnumerateFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
         {
-            Console.WriteLine($"\tAdding {Path.GetFileName(filePath)} to syntax tree.");
+            Console.WriteLine($"\tAdding {Path.GetFileName(filePath)} to syntax trees.");
             SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath), path: filePath);
             _compilation = _compilation.AddSyntaxTrees(tree);
         }
@@ -41,9 +41,7 @@ public class CSharpAnalyzer
 
                 if (newSourceRoot != sourceTree.GetRoot())
                 {
-                    using FileStream streamWriter = File.OpenWrite(sourceTree.FilePath);
-                    using TextWriter writer = new StreamWriter(streamWriter);
-                    newSourceRoot.WriteTo(writer);
+                    File.WriteAllText(sourceTree.FilePath, newSourceRoot.ToFullString());
 
                     newCompilation = newCompilation.ReplaceSyntaxTree(sourceTree, sourceTree.WithChangedText(newSourceRoot.GetText()));
                 }
