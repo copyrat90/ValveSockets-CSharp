@@ -95,6 +95,19 @@ static class ProcessHelper
         return makeProcess.ExitCode == 0;
     }
 
+    internal static bool BuildNinjaProject(string path, string extraOptions="")
+    {
+        using Process makeProcess = new();
+        makeProcess.StartInfo.FileName = "ninja";
+        makeProcess.StartInfo.Arguments = extraOptions;
+        makeProcess.StartInfo.WorkingDirectory = path;
+
+        makeProcess.Start();
+        makeProcess.WaitForExit();
+
+        return makeProcess.ExitCode == 0;
+    }
+
     internal static int InvokeWithEnvVars(string filename, string arguments, string workDir, Dictionary<string, string> environment)
     {
         using Process process = new();

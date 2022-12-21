@@ -16,6 +16,7 @@ public static class Program
     private const string ClangSharpRepoUrl = $"https://github.com/dotnet/{ClangSharpRepo}";
     private const string GNSRepo = "GameNetworkingSockets";
     private const string GNSRepoUrl = $"https://github.com/ValveSoftware/{GNSRepo}";
+    private const string GNSBuildingUrl = $"{GNSRepoUrl}/blob/master/BUILDING.md";
 
     private const string OutputName = "Valve.Sockets";
 
@@ -74,7 +75,10 @@ public static class Program
         string workDir = Path.Combine(Path.GetFullPath(args.Length > 0 ? args[0] : Directory.GetCurrentDirectory()), "gen");
         string outputDir = Path.Combine(Path.GetFullPath(args.Length > 1 ? args[1] : Directory.GetCurrentDirectory()), OutputName);
 
-        Console.WriteLine("Options:");
+        Console.WriteLine("Make sure git and the required packages are installed.");
+        Console.WriteLine($"You can read the build guide here: {GNSBuildingUrl}");
+
+        Console.WriteLine("\nOptions:");
         Console.WriteLine($"\tWork directory: {workDir}");
         Console.WriteLine($"\tOutput directory: {outputDir}");
 
@@ -110,14 +114,41 @@ public static class Program
             return 1;
         }
 
-        if (!ProcessHelper.CloneGitRepo(GNSRepoUrl, workDir))
+        if (!ProcessHelper.CloneGitRepo(GNSRepoUrl, workDir, true))
         {
             Console.WriteLine($"Failed to clone {GNSRepo}. Aborting.");
 
             return 1;
         }
 
-        // Phase 3: Build dependencies for libClangSharp
+        // Phase 3: Build GameNetworkingSockets
+
+        Console.WriteLine($"\nBuilding {GNSRepo}...");
+
+        string gnsBuildDir = Path.Join(workDir, GNSRepo, "build");
+
+        if (!ProcessHelper.InvokeCmake(Path.Combine(workDir, GNSRepo), gnsBuildDir, "-G Ninja -DUSE_STEAMWEBRTC=ON"))
+        {
+            Console.WriteLine($"Couldn't generate CMake project for {GNSRepo}. Aborting.");
+
+            return 1;
+        }
+
+        if (!File.Exists(Path.Combine(gnsBuildDir, "bin", $"lib{GNSRepo}.so")))
+        {
+            if (!ProcessHelper.BuildNinjaProject(gnsBuildDir))
+            {
+                Console.WriteLine($"Failed to build {GNSRepo}. Aborting.");
+
+                return 1;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Existing library found. Skipping build.");
+        }
+
+        // Phase 4: Build dependencies for libClangSharp
 
         Console.WriteLine("\nBuilding dependencies...");
 
@@ -160,7 +191,7 @@ public static class Program
             Console.WriteLine("Clang already built and installed.");
         }
 
-        // Phase 4: Build libClangSharp
+        // Phase 5: Build libClangSharp
 
         string clangSharpBuildPath = Path.Combine(workDir, ClangSharpRepo, "artifacts", "bin", "native");
 
@@ -184,7 +215,7 @@ public static class Program
             return 1;
         }
 
-        // Phase 5: Invoke PInvokeGenerator
+        // Phase 6: Invoke PInvokeGenerator
 
         Console.WriteLine($"\nPreparing {PInvokeGenerator}...");
 
@@ -233,7 +264,7 @@ public static class Program
 
         Console.WriteLine("Success!\n");
 
-        // Phase 6: Run CppSharp source generator
+        // Phase 7: Run CppSharp source generator
 
         Console.WriteLine($"[CppSharp] Generating {GNSRepo} bindings...");
 
@@ -258,7 +289,7 @@ public static class Program
 
         Console.WriteLine("Success!\n");
 
-        // Phase 7: Clean up generated files using CSharpAnalyzer
+        // Phase 8: Clean up generated files using CSharpAnalyzer
 
         Console.WriteLine("Initializing CSharpAnalyzer...");
 
