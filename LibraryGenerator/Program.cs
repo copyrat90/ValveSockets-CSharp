@@ -43,6 +43,7 @@ public static class Program
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "isteamnetworkingutils.h"));
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "isteamnetworkingsockets.h"));
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "isteamnetworkingmessages.h"));
+        builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "steamclientpublic.h"));
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "steamnetworkingsockets.h"));
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "steamnetworkingsockets_flat.h"));
         builder.AppendLine(Path.Combine(gnsIncludeSteamDir, "steamnetworkingtypes.h"));
