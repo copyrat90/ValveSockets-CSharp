@@ -10,7 +10,7 @@ namespace LibraryGenerator;
 public class CSharpAnalyzer
 {
     private CSharpCompilation _compilation;
-    private readonly IReadOnlyCollection<CSharpSyntaxRewriter> _syntaxRewriter = new List<CSharpSyntaxRewriter>
+    private readonly IReadOnlyCollection<ISyntaxRewriter> _syntaxRewriter = new List<ISyntaxRewriter>
     {
         new PragmaRemover(),
         new DllImportRewriter(),
@@ -33,13 +33,13 @@ public class CSharpAnalyzer
     {
         CSharpCompilation newCompilation = _compilation;
 
-        foreach (CSharpSyntaxRewriter rewriter in _syntaxRewriter)
+        foreach (ISyntaxRewriter rewriter in _syntaxRewriter)
         {
             Console.WriteLine($"Running SyntaxRewriter: {rewriter}");
 
             foreach (SyntaxTree sourceTree in _compilation.SyntaxTrees)
             {
-                var newSourceRoot = rewriter.Visit(sourceTree.GetRoot());
+                var newSourceRoot = rewriter.FixupVisit(rewriter.Visit(sourceTree.GetRoot()));
 
                 if (newSourceRoot != sourceTree.GetRoot())
                 {

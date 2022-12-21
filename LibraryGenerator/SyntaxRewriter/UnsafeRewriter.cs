@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
-public class UnsafeRewriter : CSharpSyntaxRewriter
+public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     private ParameterListSyntax VisitMethodParameterList(ParameterListSyntax node)
     {
@@ -91,6 +91,11 @@ public class UnsafeRewriter : CSharpSyntaxRewriter
             return node.ReplaceNode(node, node.WithModifiers(newModifiers).WithMembers(newMembers));
         }
 
+        return node;
+    }
+
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
         return node;
     }
 }

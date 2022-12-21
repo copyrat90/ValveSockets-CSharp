@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
-public class PragmaRemover : CSharpSyntaxRewriter
+public class PragmaRemover : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
     {
@@ -13,5 +13,10 @@ public class PragmaRemover : CSharpSyntaxRewriter
         }
 
         return trivia;
+    }
+
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        return node;
     }
 }

@@ -6,8 +6,11 @@ using System.Linq;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
-public class DllImportRewriter : CSharpSyntaxRewriter
+public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    private bool _hasCompilerServices;
+    private bool _needsCompilerServices;
+
     private static bool AttributeIsDllImport(AttributeSyntax attribute) => attribute.Name.ToString() == "DllImport";
 
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
@@ -69,5 +72,30 @@ public class DllImportRewriter : CSharpSyntaxRewriter
             .WithModifiers(newModifiers)
             .WithAttributeLists(SyntaxFactory.List(newAttributeLists))
         );
+    }
+
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        if (_needsCompilerServices)
+        {
+            foreach (var childNode in node.ChildNodes())
+            {
+                if (childNode.IsKind(SyntaxKind.UsingDirective))
+                {
+                    return node.InsertNodesAfter(
+                        childNode, new []
+                        {
+                            SyntaxFactory.UsingDirective(
+                                SyntaxFactory.ParseName("System.Runtime.CompilerServices").WithLeadingTrivia(SyntaxFactory.Space)
+                            ).WithSemicolonToken(
+                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
+                            )
+                        }
+                    );
+                }
+            }
+        }
+
+        return node;
     }
 }
