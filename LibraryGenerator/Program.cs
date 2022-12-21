@@ -193,10 +193,24 @@ public static class Program
         if (Directory.Exists(outputDir))
         {
             Console.WriteLine($"Cleaning existing output directory: {outputDir}");
-            Directory.Delete(outputDir, true);
+            foreach (var file in Directory.EnumerateFiles(outputDir, "*.cs", SearchOption.AllDirectories))
+            {
+                #if DEBUG
+                if (Path.GetFileName(file) == "NativeTypeNameAttribute.cs")
+                {
+                    continue;
+                }
+                #endif
+
+                File.Delete(file);
+            }
         }
 
         Directory.CreateDirectory(outputDir);
+
+        #if RELEASE
+        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "NativeTypeNameAttribute.cs"), Path.Combine(outputDir, "NativeTypeNameAttribute.cs"));
+        #endif
 
         Console.WriteLine($"[ClangSharp] Generating {GNSRepo} bindings...");
 
