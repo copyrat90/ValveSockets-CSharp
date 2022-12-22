@@ -7,7 +7,7 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
-    private static TypeSyntax ExtractNativeType(AttributeArgumentSyntax argument)
+    private static bool ExtractNativeType(AttributeArgumentSyntax argument, out TypeSyntax newType)
     {
         var nativeType = argument.Expression.ToString().Trim('"');
 
@@ -31,12 +31,22 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 break;
         }
 
-        return SyntaxFactory.ParseTypeName(nativeType);
+        newType = SyntaxFactory.ParseTypeName(nativeType);
+
+        if (nativeType.Contains("*") || nativeType.Contains("const") || nativeType.Contains("&") || newType.IsKind(SyntaxKind.IdentifierName))
+        {
+            newType = null;
+
+            return false;
+        }
+
+        return true;
     }
 
-    private static bool TryGetNativeTypeName(SyntaxList<AttributeListSyntax> attributeLists, out TypeSyntax nativeType)
+    private static bool TryGetNativeType(SyntaxList<AttributeListSyntax> attributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList)
     {
         nativeType = null;
+        nativeTypeAttributeList = null;
 
         foreach (AttributeListSyntax attributeList in attributeLists)
         {
@@ -44,7 +54,13 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
             if (nativeTypeAttribute != null)
             {
-                nativeType = ExtractNativeType(nativeTypeAttribute.ArgumentList!.Arguments.First());
+                if (!ExtractNativeType(nativeTypeAttribute.ArgumentList!.Arguments.First(), out TypeSyntax extractedType))
+                {
+                    return false;
+                }
+
+                nativeType = extractedType;
+                nativeTypeAttributeList = attributeList;
 
                 return true;
             }
@@ -94,7 +110,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
-        if (!TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
@@ -108,19 +124,23 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
     {
-        if (!TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
 
-        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType));
+        var attributeLists = node.AttributeLists.Remove(nativeTypeAttributeList);
+
+        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType).WithAttributeLists(attributeLists));
     }
 
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
-        if (TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax methodNativeTypeAttributeList))
         {
-            node = node.ReplaceNode(node, node.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType)));
+            var methodAttributeLists = node.AttributeLists.Remove(methodNativeTypeAttributeList);
+
+            node = node.ReplaceNode(node, node.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType)).WithAttributeLists(methodAttributeLists));
         }
 
         foreach (var childNode in node.ChildNodes())
@@ -132,13 +152,14 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
                 foreach (ParameterSyntax parameter in parameterList.Parameters)
                 {
-                    if (!TryGetNativeTypeName(parameter.AttributeLists, out TypeSyntax paramNativeType))
+                    if (!TryGetNativeType(parameter.AttributeLists, out TypeSyntax paramNativeType, out AttributeListSyntax paramNativeTypeAttributeList))
                     {
                         newParameterList = newParameterList.Add(parameter);
                         continue;
                     }
 
-                    var newParameter = GetNativeTypeNode(parameter, paramNativeType);
+                    var newParameter = GetNativeTypeNode(parameter, paramNativeType).WithAttributeLists(
+                        parameter.AttributeLists.Remove(paramNativeTypeAttributeList));
 
                     if (newParameter != parameter)
                     {
@@ -163,7 +184,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitOperatorDeclaration(OperatorDeclarationSyntax node)
     {
-        if (!TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
@@ -173,7 +194,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
     {
-        if (!TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
@@ -183,7 +204,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitParameter(ParameterSyntax node)
     {
-        if (!TryGetNativeTypeName(node.AttributeLists, out TypeSyntax nativeType))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
