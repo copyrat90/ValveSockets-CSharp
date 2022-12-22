@@ -14,6 +14,62 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     private static bool AttributeIsDllImport(AttributeSyntax attribute) => attribute.Name.ToString() == "DllImport";
 
+    private static bool TypeRequiresMarshalAsAttribute(TypeSyntax type)
+    {
+        return type.ToString() switch
+        {
+            "bool" => true,
+            _ => false
+        };
+    }
+
+    private static AttributeSyntax GetMarshalAsAttribute(TypeSyntax type)
+    {
+        if (!TypeRequiresMarshalAsAttribute(type))
+        {
+            return null;
+        }
+
+        var argumentList = SyntaxFactory.SeparatedList<AttributeArgumentSyntax>();
+        var attribute = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("MarshalAs"));
+        var unmanagedTypeName = SyntaxFactory.IdentifierName("UnmanagedType");
+
+        if (type.ToString() == "bool")
+        {
+            argumentList = argumentList.Add(SyntaxFactory.AttributeArgument(
+                SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("Bool")))
+            );
+        }
+
+        return attribute.WithArgumentList(SyntaxFactory.AttributeArgumentList(argumentList));
+    }
+
+    private ParameterListSyntax AddMarshalAsAttribute(ParameterListSyntax parameterList)
+    {
+        bool changedParameter = false;
+        var newParameterList = SyntaxFactory.SeparatedList<ParameterSyntax>();
+
+        foreach (ParameterSyntax parameter in parameterList.Parameters)
+        {
+            if (TypeRequiresMarshalAsAttribute(parameter.Type))
+            {
+                newParameterList = newParameterList.Add(parameter.WithAttributeLists(SyntaxFactory.List(new[]
+                {
+                    SyntaxFactory.AttributeList(
+                            SyntaxFactory.SeparatedList(new[] { GetMarshalAsAttribute(parameter.Type) }))
+                        .WithTrailingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                })));
+                changedParameter = true;
+
+                continue;
+            }
+
+            newParameterList = newParameterList.Add(parameter);
+        }
+
+        return changedParameter ? parameterList.WithParameters(newParameterList) : parameterList;
+    }
+
     public override SyntaxNode VisitUsingDirective(UsingDirectiveSyntax node)
     {
         if (node.Name.ToString() == "System.Runtime.CompilerServices")
@@ -26,11 +82,21 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
-        var nodeAttributeLists = node.AttributeLists.FirstOrDefault(attributeList => attributeList.Attributes.Any(AttributeIsDllImport));
+        var nodeAttributeLists =
+            node.AttributeLists.FirstOrDefault(attributeList => attributeList.Attributes.Any(AttributeIsDllImport));
 
         if (nodeAttributeLists == null)
         {
             return node;
+        }
+
+        AttributeListSyntax lastAttribute = node.AttributeLists.Last();
+        var attributeTrailingTrivia = lastAttribute.GetTrailingTrivia();
+        var attributeLeadingTrivia = lastAttribute.GetLeadingTrivia();
+
+        if (attributeLeadingTrivia.First().IsKind(SyntaxKind.EndOfLineTrivia))
+        {
+            attributeLeadingTrivia = attributeLeadingTrivia.RemoveAt(0);
         }
 
         var nodeAttribute = nodeAttributeLists.Attributes.First(AttributeIsDllImport);
@@ -40,14 +106,17 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         SyntaxToken partialKeyword = SyntaxFactory.Token(SyntaxKind.PartialKeyword);
 
         var entryPointArg =
-            nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(argument => argument.ToString().StartsWith("EntryPoint"), null);
+            nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(
+                argument => argument.ToString().StartsWith("EntryPoint"), null);
 
         var callConvArg =
-            nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(argument => argument.ToString().StartsWith("CallingConvention"), null);
+            nodeAttribute.ArgumentList!.Arguments.FirstOrDefault(
+                argument => argument.ToString().StartsWith("CallingConvention"), null);
 
         if (entryPointArg != null)
         {
-            newArgumentList = newArgumentList.AddArguments(nodeAttribute.ArgumentList!.Arguments.First(), entryPointArg);
+            newArgumentList =
+                newArgumentList.AddArguments(nodeAttribute.ArgumentList!.Arguments.First(), entryPointArg);
         }
         else
         {
@@ -92,22 +161,26 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                     _needsCompilerServices = true;
                 }
 
-                var lastAttribute = node.AttributeLists.Last();
-                var lastAttributeLeadingTrivia = lastAttribute.GetLeadingTrivia();
-
-                if (lastAttributeLeadingTrivia.First().IsKind(SyntaxKind.EndOfLineTrivia))
-                {
-                    lastAttributeLeadingTrivia = lastAttributeLeadingTrivia.RemoveAt(0);
-                }
-
                 newAttributeLists.Add(SyntaxFactory.AttributeList(SyntaxFactory.SeparatedList(new[]
-                {
-                    SyntaxFactory.Attribute(callConvAttributeName, SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(new []
                     {
-                        SyntaxFactory.AttributeArgument(callConvsArgumentName, null, callConvsArgumentValue)
-                    })))
-                })).WithTrailingTrivia(lastAttribute.GetTrailingTrivia()).WithLeadingTrivia(lastAttributeLeadingTrivia));
+                        SyntaxFactory.Attribute(callConvAttributeName,
+                            SyntaxFactory.AttributeArgumentList(SyntaxFactory.SeparatedList(new[]
+                            {
+                                SyntaxFactory.AttributeArgument(callConvsArgumentName, null, callConvsArgumentValue)
+                            })))
+                    })).WithTrailingTrivia(attributeTrailingTrivia)
+                    .WithLeadingTrivia(attributeLeadingTrivia));
             }
+        }
+
+        if (TypeRequiresMarshalAsAttribute(node.ReturnType))
+        {
+            newAttributeLists.Add(SyntaxFactory.AttributeList(
+                    SyntaxFactory.AttributeTargetSpecifier(SyntaxFactory.Token(SyntaxKind.ReturnKeyword))
+                        .WithTrailingTrivia(SyntaxFactory.Space),
+                    SyntaxFactory.SeparatedList(new[] { GetMarshalAsAttribute(node.ReturnType) }))
+                .WithTrailingTrivia(attributeTrailingTrivia)
+                .WithLeadingTrivia(attributeLeadingTrivia));
         }
 
         foreach (AttributeListSyntax attributeList in node.AttributeLists)
@@ -127,9 +200,11 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             }
         }
 
+        var newParameters = AddMarshalAsAttribute(node.ParameterList);
+
         return node.ReplaceNode(node, node
             .WithModifiers(newModifiers)
-            .WithAttributeLists(SyntaxFactory.List(newAttributeLists))
+            .WithAttributeLists(SyntaxFactory.List(newAttributeLists)).WithParameterList(newParameters)
         );
     }
 
@@ -142,12 +217,14 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 if (childNode.IsKind(SyntaxKind.UsingDirective))
                 {
                     return node.InsertNodesAfter(
-                        childNode, new []
+                        childNode, new[]
                         {
                             SyntaxFactory.UsingDirective(
-                                SyntaxFactory.ParseName("System.Runtime.CompilerServices").WithLeadingTrivia(SyntaxFactory.Space)
+                                SyntaxFactory.ParseName("System.Runtime.CompilerServices")
+                                    .WithLeadingTrivia(SyntaxFactory.Space)
                             ).WithSemicolonToken(
-                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken, SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
+                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken,
+                                    SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
                             )
                         }
                     );
