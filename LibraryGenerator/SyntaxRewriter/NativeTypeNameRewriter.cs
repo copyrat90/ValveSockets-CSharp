@@ -11,6 +11,9 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     {
         var nativeType = argument.Expression.ToString().Trim('"');
 
+        // TODO: Add support for const pointer types
+        // TODO: Add support for pointer types
+
         switch (nativeType)
         {
             case "uint64":
