@@ -17,6 +17,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         switch (nativeType)
         {
             case "uint64":
+            case "size_t":
                 nativeType = "ulong";
                 break;
             case "uint32":
