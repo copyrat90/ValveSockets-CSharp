@@ -13,6 +13,7 @@ public class CSharpAnalyzer
     private readonly IReadOnlyCollection<ISyntaxRewriter> _syntaxRewriter = new List<ISyntaxRewriter>
     {
         new PragmaRemover(),
+        new DuplicateTypeRemover(),
         new NativeTypeNameRewriter(),
         new DllImportRewriter(),
         new UnsafeRewriter()
