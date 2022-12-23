@@ -9,34 +9,16 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     public bool NeedsFixupVisit => false;
 
-    private static SyntaxToken GetRefKeyword => SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword,
-        SyntaxFactory.TriviaList(SyntaxFactory.Space));
-
-    private RefTypeSyntax RewriteMethodPointerType(PointerTypeSyntax node)
+    public SyntaxNode FixupVisit(SyntaxNode node)
     {
-        return SyntaxFactory.RefType(GetRefKeyword, node.ElementType.WithTriviaFrom(node));
+        throw new NotImplementedException();
     }
 
-    private ParameterListSyntax VisitMethodParameterList(ParameterListSyntax node)
-    {
-        bool changedParameter = false;
-        var parameterList = SyntaxFactory.SeparatedList<ParameterSyntax>();
+    private static bool ShouldRewriteParameter(ParameterSyntax parameter) =>
+        parameter.Type.IsKind(SyntaxKind.PointerType);
 
-        foreach (ParameterSyntax parameter in node.Parameters)
-        {
-            if (parameter.Type.IsKind(SyntaxKind.PointerType) && parameter.Type is PointerTypeSyntax pointerParam)
-            {
-                parameterList = parameterList.Add(parameter.WithType(RewriteMethodPointerType(pointerParam)));
-                changedParameter = true;
-
-                continue;
-            }
-
-            parameterList = parameterList.Add(parameter);
-        }
-
-        return changedParameter ? node.WithParameters(parameterList) : node;
-    }
+    private static ParameterSyntax RewriteParameter(ParameterSyntax parameter) =>
+        parameter.WithType(RewriteHelper.PointerToRefType(parameter.Type as PointerTypeSyntax));
 
     private BlockSyntax FixReturnStatements(BlockSyntax node)
     {
@@ -46,7 +28,8 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         {
             if (statement.IsKind(SyntaxKind.ReturnStatement) && statement is ReturnStatementSyntax returnStatement)
             {
-                statements = statements.Add(returnStatement.WithExpression(SyntaxFactory.RefExpression(GetRefKeyword, returnStatement.Expression!)));
+                statements = statements.Add(returnStatement.WithExpression(
+                    SyntaxFactory.RefExpression(RewriteHelper.GetRefKeyword, returnStatement.Expression!)));
 
                 continue;
             }
@@ -66,7 +49,8 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
             if (method.ReturnType.IsKind(SyntaxKind.PointerType))
             {
-                newMethod = newMethod.WithReturnType(RewriteMethodPointerType(newMethod.ReturnType as PointerTypeSyntax));
+                newMethod = newMethod.WithReturnType(
+                    RewriteHelper.PointerToRefType(newMethod.ReturnType as PointerTypeSyntax));
                 changedReturnType = true;
             }
 
@@ -74,7 +58,7 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             {
                 if (childNode.IsKind(SyntaxKind.ParameterList) && childNode is ParameterListSyntax parameterList)
                 {
-                    var newParameterList = VisitMethodParameterList(parameterList);
+                    var newParameterList = parameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter);
 
                     if (parameterList != newParameterList)
                     {
@@ -120,10 +104,5 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         }
 
         return node;
-    }
-
-    public SyntaxNode FixupVisit(SyntaxNode node)
-    {
-        throw new NotImplementedException();
     }
 }

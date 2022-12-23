@@ -10,6 +10,11 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     public bool NeedsFixupVisit => false;
 
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        throw new NotImplementedException();
+    }
+
     private static bool ExtractNativeType(AttributeArgumentSyntax argument, out TypeSyntax newType)
     {
         var nativeType = argument.Expression.ToString().Trim('"');
@@ -36,7 +41,8 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         newType = SyntaxFactory.ParseTypeName(nativeType);
 
-        if (nativeType.Contains("*") || nativeType.Contains("const") || nativeType.Contains("&") || newType.IsKind(SyntaxKind.IdentifierName))
+        if (nativeType.Contains("*") || nativeType.Contains("const") || nativeType.Contains("&") ||
+            newType.IsKind(SyntaxKind.IdentifierName))
         {
             newType = null;
 
@@ -46,18 +52,22 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         return true;
     }
 
-    private static bool TryGetNativeType(SyntaxList<AttributeListSyntax> attributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList)
+    private static bool TryGetNativeType(SyntaxList<AttributeListSyntax> attributeLists, out TypeSyntax nativeType,
+        out AttributeListSyntax nativeTypeAttributeList)
     {
         nativeType = null;
         nativeTypeAttributeList = null;
 
         foreach (AttributeListSyntax attributeList in attributeLists)
         {
-            AttributeSyntax nativeTypeAttribute = attributeList.Attributes.FirstOrDefault(attribute => attribute.Name.ToString() == "NativeTypeName", null);
+            AttributeSyntax nativeTypeAttribute =
+                attributeList.Attributes.FirstOrDefault(attribute => attribute.Name.ToString() == "NativeTypeName",
+                    null);
 
             if (nativeTypeAttribute != null)
             {
-                if (!ExtractNativeType(nativeTypeAttribute.ArgumentList!.Arguments.First(), out TypeSyntax extractedType))
+                if (!ExtractNativeType(nativeTypeAttribute.ArgumentList!.Arguments.First(),
+                        out TypeSyntax extractedType))
                 {
                     return false;
                 }
@@ -92,7 +102,8 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             return currentParameter.WithType(GetNativeTypeNode(currentParameter.Type, nativeType)) as T;
         }
 
-        if (currentType.IsKind(SyntaxKind.OperatorDeclaration) && currentType is OperatorDeclarationSyntax currentOperator)
+        if (currentType.IsKind(SyntaxKind.OperatorDeclaration) &&
+            currentType is OperatorDeclarationSyntax currentOperator)
         {
             return currentOperator.WithReturnType(GetNativeTypeNode(currentOperator.ReturnType, nativeType)) as T;
         }
@@ -103,7 +114,8 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 currentField.Declaration.WithType(GetNativeTypeNode(currentField.Declaration.Type, nativeType))) as T;
         }
 
-        if (currentType.IsKind(SyntaxKind.PropertyDeclaration) && currentType is PropertyDeclarationSyntax currentProperty)
+        if (currentType.IsKind(SyntaxKind.PropertyDeclaration) &&
+            currentType is PropertyDeclarationSyntax currentProperty)
         {
             return currentProperty.WithType(GetNativeTypeNode(currentProperty.Type, nativeType)) as T;
         }
@@ -111,9 +123,23 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         return currentType;
     }
 
+    private static bool ShouldRewriteParameter(ParameterSyntax parameter) => TryGetNativeType(parameter.AttributeLists,
+        out TypeSyntax _,
+        out AttributeListSyntax _);
+
+    private static ParameterSyntax RewriteParameter(ParameterSyntax parameter)
+    {
+        TryGetNativeType(parameter.AttributeLists, out TypeSyntax paramNativeType,
+            out AttributeListSyntax nativeTypeAttributeList);
+
+        return GetNativeTypeNode(parameter, paramNativeType).WithAttributeLists(
+            parameter.AttributeLists.Remove(nativeTypeAttributeList));
+    }
+
     public override SyntaxNode VisitEnumDeclaration(EnumDeclarationSyntax node)
     {
-        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
@@ -127,7 +153,8 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
     {
-        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
@@ -139,46 +166,22 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
-        if (TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax methodNativeTypeAttributeList))
+        if (TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax methodNativeTypeAttributeList))
         {
             var methodAttributeLists = node.AttributeLists.Remove(methodNativeTypeAttributeList);
 
-            node = node.ReplaceNode(node, node.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType)).WithAttributeLists(methodAttributeLists));
+            node = node.ReplaceNode(node,
+                node.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType))
+                    .WithAttributeLists(methodAttributeLists));
         }
 
         foreach (var childNode in node.ChildNodes())
         {
             if (childNode.IsKind(SyntaxKind.ParameterList) && childNode is ParameterListSyntax parameterList)
             {
-                bool parameterListChanged = false;
-                var newParameterList = SyntaxFactory.SeparatedList<ParameterSyntax>();
-
-                foreach (ParameterSyntax parameter in parameterList.Parameters)
-                {
-                    if (!TryGetNativeType(parameter.AttributeLists, out TypeSyntax paramNativeType, out AttributeListSyntax paramNativeTypeAttributeList))
-                    {
-                        newParameterList = newParameterList.Add(parameter);
-                        continue;
-                    }
-
-                    var newParameter = GetNativeTypeNode(parameter, paramNativeType).WithAttributeLists(
-                        parameter.AttributeLists.Remove(paramNativeTypeAttributeList));
-
-                    if (newParameter != parameter)
-                    {
-                        newParameterList = newParameterList.Add(newParameter);
-                        parameterListChanged = true;
-                    }
-                    else
-                    {
-                        newParameterList = newParameterList.Add(parameter);
-                    }
-                }
-
-                if (parameterListChanged)
-                {
-                    node = node.ReplaceNode(parameterList, parameterList.WithParameters(newParameterList));
-                }
+                node = node.ReplaceNode(parameterList,
+                    parameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter));
             }
         }
 
@@ -187,36 +190,40 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public override SyntaxNode VisitOperatorDeclaration(OperatorDeclarationSyntax node)
     {
-        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
 
-        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType));
+        var attributeLists = node.AttributeLists.Remove(nativeTypeAttributeList);
+
+        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType).WithAttributeLists(attributeLists));
     }
 
     public override SyntaxNode VisitPropertyDeclaration(PropertyDeclarationSyntax node)
     {
-        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
 
-        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType));
+        var attributeLists = node.AttributeLists.Remove(nativeTypeAttributeList);
+
+        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType).WithAttributeLists(attributeLists));
     }
 
     public override SyntaxNode VisitParameter(ParameterSyntax node)
     {
-        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType, out AttributeListSyntax nativeTypeAttributeList))
+        if (!TryGetNativeType(node.AttributeLists, out TypeSyntax nativeType,
+                out AttributeListSyntax nativeTypeAttributeList))
         {
             return node;
         }
 
-        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType));
-    }
+        var attributeLists = node.AttributeLists.Remove(nativeTypeAttributeList);
 
-    public SyntaxNode FixupVisit(SyntaxNode node)
-    {
-        throw new NotImplementedException();
+        return node.ReplaceNode(node, GetNativeTypeNode(node, nativeType).WithAttributeLists(attributeLists));
     }
 }

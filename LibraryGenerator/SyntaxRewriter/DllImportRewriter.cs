@@ -9,20 +9,56 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
-    public bool NeedsFixupVisit => true;
-
     private bool _hasCompilerServices;
     private bool _needsCompilerServices;
+    public bool NeedsFixupVisit => true;
+
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        if (_needsCompilerServices)
+        {
+            foreach (var childNode in node.ChildNodes())
+            {
+                if (childNode.IsKind(SyntaxKind.UsingDirective))
+                {
+                    return node.InsertNodesAfter(
+                        childNode, new[]
+                        {
+                            SyntaxFactory.UsingDirective(
+                                SyntaxFactory.ParseName("System.Runtime.CompilerServices")
+                                    .WithLeadingTrivia(SyntaxFactory.Space)
+                            ).WithSemicolonToken(
+                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken,
+                                    SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
+                            )
+                        }
+                    );
+                }
+            }
+        }
+
+        return node;
+    }
 
     private static bool AttributeIsDllImport(AttributeSyntax attribute) => attribute.Name.ToString() == "DllImport";
 
-    private static bool TypeRequiresMarshalAsAttribute(TypeSyntax type)
+    private static bool TypeRequiresMarshalAsAttribute(TypeSyntax type) => type.ToString() switch
     {
-        return type.ToString() switch
+        "bool" => true,
+        _ => false
+    };
+
+    private static bool ShouldRewriteParameter(ParameterSyntax parameter) =>
+        TypeRequiresMarshalAsAttribute(parameter.Type);
+
+    private static ParameterSyntax RewriteParameter(ParameterSyntax parameter)
+    {
+        return parameter.WithAttributeLists(SyntaxFactory.List(new[]
         {
-            "bool" => true,
-            _ => false
-        };
+            SyntaxFactory.AttributeList(
+                    SyntaxFactory.SeparatedList(new[] { GetMarshalAsAttribute(parameter.Type) }))
+                .WithTrailingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+        }));
     }
 
     private static AttributeSyntax GetMarshalAsAttribute(TypeSyntax type)
@@ -44,32 +80,6 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         }
 
         return attribute.WithArgumentList(SyntaxFactory.AttributeArgumentList(argumentList));
-    }
-
-    private ParameterListSyntax AddMarshalAsAttribute(ParameterListSyntax parameterList)
-    {
-        bool changedParameter = false;
-        var newParameterList = SyntaxFactory.SeparatedList<ParameterSyntax>();
-
-        foreach (ParameterSyntax parameter in parameterList.Parameters)
-        {
-            if (TypeRequiresMarshalAsAttribute(parameter.Type))
-            {
-                newParameterList = newParameterList.Add(parameter.WithAttributeLists(SyntaxFactory.List(new[]
-                {
-                    SyntaxFactory.AttributeList(
-                            SyntaxFactory.SeparatedList(new[] { GetMarshalAsAttribute(parameter.Type) }))
-                        .WithTrailingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
-                })));
-                changedParameter = true;
-
-                continue;
-            }
-
-            newParameterList = newParameterList.Add(parameter);
-        }
-
-        return changedParameter ? parameterList.WithParameters(newParameterList) : parameterList;
     }
 
     public override SyntaxNode VisitUsingDirective(UsingDirectiveSyntax node)
@@ -202,38 +212,11 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             }
         }
 
-        var newParameters = AddMarshalAsAttribute(node.ParameterList);
+        var newParameters = node.ParameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter);
 
         return node.ReplaceNode(node, node
             .WithModifiers(newModifiers)
             .WithAttributeLists(SyntaxFactory.List(newAttributeLists)).WithParameterList(newParameters)
         );
-    }
-
-    public SyntaxNode FixupVisit(SyntaxNode node)
-    {
-        if (_needsCompilerServices)
-        {
-            foreach (var childNode in node.ChildNodes())
-            {
-                if (childNode.IsKind(SyntaxKind.UsingDirective))
-                {
-                    return node.InsertNodesAfter(
-                        childNode, new[]
-                        {
-                            SyntaxFactory.UsingDirective(
-                                SyntaxFactory.ParseName("System.Runtime.CompilerServices")
-                                    .WithLeadingTrivia(SyntaxFactory.Space)
-                            ).WithSemicolonToken(
-                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken,
-                                    SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
-                            )
-                        }
-                    );
-                }
-            }
-        }
-
-        return node;
     }
 }
