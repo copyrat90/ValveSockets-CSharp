@@ -9,6 +9,8 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    public bool NeedsFixupVisit => true;
+
     private bool _hasCompilerServices;
     private bool _needsCompilerServices;
 

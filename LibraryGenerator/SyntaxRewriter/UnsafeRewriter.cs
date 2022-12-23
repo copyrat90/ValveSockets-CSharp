@@ -1,11 +1,14 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
 public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    public bool NeedsFixupVisit => false;
+
     private static SyntaxToken GetRefKeyword => SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.RefKeyword,
         SyntaxFactory.TriviaList(SyntaxFactory.Space));
 
@@ -121,6 +124,6 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public SyntaxNode FixupVisit(SyntaxNode node)
     {
-        return node;
+        throw new NotImplementedException();
     }
 }

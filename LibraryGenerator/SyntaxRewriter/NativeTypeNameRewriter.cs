@@ -1,12 +1,15 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Linq;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
 public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    public bool NeedsFixupVisit => false;
+
     private static bool ExtractNativeType(AttributeArgumentSyntax argument, out TypeSyntax newType)
     {
         var nativeType = argument.Expression.ToString().Trim('"');
@@ -214,6 +217,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     public SyntaxNode FixupVisit(SyntaxNode node)
     {
-        return node;
+        throw new NotImplementedException();
     }
 }
