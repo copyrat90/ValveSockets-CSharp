@@ -14,6 +14,8 @@ static class ProcessHelper
         using Process dotnetProcess = new();
         dotnetProcess.StartInfo.FileName = "dotnet";
         dotnetProcess.StartInfo.Arguments = $"tool install -g {toolName}";
+        dotnetProcess.StartInfo.WorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        dotnetProcess.StartInfo.Environment.Add("LC_ALL", "C");
         dotnetProcess.StartInfo.RedirectStandardError = true;
 
         dotnetProcess.Start();
@@ -27,7 +29,7 @@ static class ProcessHelper
         return dotnetProcess.ExitCode == 0;
     }
 
-    internal static bool CloneGitRepo(string url, string workDir, bool recursive=false, string extraOptions="")
+    internal static bool CloneGitRepo(string url, string workDir, bool recursive = false, string extraOptions = "")
     {
         int nameStartIndex = url.LastIndexOf("/") + 1;
         string repoName = url.Substring(nameStartIndex,
@@ -44,7 +46,8 @@ static class ProcessHelper
 
         using Process gitProcess = new();
         gitProcess.StartInfo.FileName = "git";
-        gitProcess.StartInfo.Arguments = recursive ? $"clone {url} --recurse-submodules {extraOptions}" : $"clone {url} {extraOptions}";
+        gitProcess.StartInfo.Arguments =
+            recursive ? $"clone {url} --recurse-submodules {extraOptions}" : $"clone {url} {extraOptions}";
         gitProcess.StartInfo.WorkingDirectory = workDir;
 
         gitProcess.Start();
@@ -82,7 +85,7 @@ static class ProcessHelper
         return cmakeProcess.ExitCode == 0;
     }
 
-    internal static bool BuildMakeProject(string path, string extraOptions="")
+    internal static bool BuildMakeProject(string path, string extraOptions = "")
     {
         using Process makeProcess = new();
         makeProcess.StartInfo.FileName = "make";
@@ -95,7 +98,7 @@ static class ProcessHelper
         return makeProcess.ExitCode == 0;
     }
 
-    internal static bool BuildNinjaProject(string path, string extraOptions="")
+    internal static bool BuildNinjaProject(string path, string extraOptions = "")
     {
         using Process makeProcess = new();
         makeProcess.StartInfo.FileName = "ninja";
@@ -108,7 +111,8 @@ static class ProcessHelper
         return makeProcess.ExitCode == 0;
     }
 
-    internal static int InvokeWithEnvVars(string filename, string arguments, string workDir, Dictionary<string, string> environment)
+    internal static int InvokeWithEnvVars(string filename, string arguments, string workDir,
+        Dictionary<string, string> environment)
     {
         using Process process = new();
         process.StartInfo.FileName = filename;
