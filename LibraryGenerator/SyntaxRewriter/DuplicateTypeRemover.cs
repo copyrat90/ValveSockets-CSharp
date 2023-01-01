@@ -8,9 +8,13 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class DuplicateTypeRemover : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    private readonly HashSet<string> _typeNames = new();
     public bool NeedsFixupVisit => false;
 
-    private readonly HashSet<string> typeNames = new();
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        throw new NotImplementedException();
+    }
 
     public override SyntaxNode VisitStructDeclaration(StructDeclarationSyntax node)
     {
@@ -19,18 +23,13 @@ public class DuplicateTypeRemover : CSharpSyntaxRewriter, ISyntaxRewriter
             return node;
         }
 
-        if (typeNames.Contains(qualifiedName.ToString()))
+        if (_typeNames.Contains(qualifiedName.ToString()))
         {
             return node.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
         }
 
-        typeNames.Add(qualifiedName.ToString());
+        _typeNames.Add(qualifiedName.ToString());
 
         return node;
-    }
-
-    public SyntaxNode FixupVisit(SyntaxNode node)
-    {
-        throw new NotImplementedException();
     }
 }
