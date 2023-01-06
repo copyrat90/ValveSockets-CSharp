@@ -1,9 +1,9 @@
 using CppSharp;
 using CppSharp.AST;
 using CppSharp.Generators;
+using CppSharp.Parser;
 using System.Collections.Generic;
 using System.IO;
-using CppSharp.Parser;
 
 namespace LibraryGenerator;
 
@@ -13,8 +13,8 @@ public class GameNetworkingSocketsLibrary : ILibrary
     private const string LibraryName = "GameNetworkingSockets";
 
     private readonly List<string> _headerFiles;
-    private readonly string _steamIncludePath;
     private readonly string _outputPath;
+    private readonly string _steamIncludePath;
 
     public GameNetworkingSocketsLibrary(string repoPath, string outputPath)
     {
@@ -59,16 +59,16 @@ public class GameNetworkingSocketsLibrary : ILibrary
 
     public void SetupPasses(Driver driver)
     {
-
     }
 
     public void Preprocess(Driver driver, ASTContext ctx)
     {
-
     }
 
     public void Postprocess(Driver driver, ASTContext ctx)
     {
+        ctx.IgnoreClassWithName("SteamNetAuthenticationStatus_t");
+
         foreach (var unit in ctx.TranslationUnits)
         {
             foreach (var unitClass in unit.Classes)
