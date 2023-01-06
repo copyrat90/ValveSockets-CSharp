@@ -28,11 +28,23 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     private static bool ExtractNativeType(string nativeType, out TypeSyntax newType)
     {
+        // TODO: This probably needs to be changed again
+        //       Some types also contain their namespace
+        //       We mainly want to filter out those that reference original source files
+        if (nativeType.Contains("::"))
+        {
+            newType = null;
+            return false;
+        }
+
         // TODO: Add support for const pointer types
         // TODO: Add support for pointer types
 
         switch (nativeType)
         {
+            case "uint8":
+                nativeType = "byte";
+                break;
             case "uint64":
             case "size_t":
                 nativeType = "ulong";
@@ -46,11 +58,14 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             case "int64":
                 nativeType = "long";
                 break;
+            case "char *":
+                nativeType = "string";
+                break;
         }
 
         newType = SyntaxFactory.ParseTypeName(nativeType);
 
-        if (IsSpecialNativeType(nativeType) || newType.IsKind(SyntaxKind.IdentifierName))
+        if (newType.IsMissing)
         {
             newType = null;
 
@@ -58,6 +73,73 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         }
 
         return true;
+    }
+
+    private static ParameterSyntax ExtractNativeTypeParameter(ParameterSyntax parameter, string nativeTypeName)
+    {
+        SyntaxToken newModifier = SyntaxFactory.Token(SyntaxKind.None);
+        bool isConst = nativeTypeName.StartsWith("const");
+        bool isRef = nativeTypeName.EndsWith("*");
+
+        // TODO: Deal with 'type* const *' types
+
+        if (isConst)
+        {
+            nativeTypeName = nativeTypeName[6..];
+        }
+
+        if (isRef)
+        {
+            nativeTypeName = nativeTypeName[..^2];
+        }
+
+        switch (nativeTypeName)
+        {
+            case "char":
+                if (isRef)
+                {
+                    nativeTypeName = "string";
+                }
+                break;
+            case "void":
+                if (isRef && isConst)
+                {
+                    nativeTypeName = "byte[]";
+                }
+                break;
+            case "int64":
+                if (isRef && !isConst)
+                {
+                    nativeTypeName = "IntPtr";
+                }
+                break;
+            case "uint64":
+                if (isRef && !isConst)
+                {
+                    nativeTypeName = "UIntPtr";
+                }
+                break;
+        }
+
+        var nativeType = SyntaxFactory.ParseTypeName(nativeTypeName).WithTriviaFrom(parameter.Type!);
+
+        if (isConst && isRef)
+        {
+            newModifier = SyntaxFactory.Token(SyntaxKind.InKeyword);
+        }
+        else if (isRef)
+        {
+            newModifier = SyntaxFactory.Token(SyntaxKind.RefKeyword);
+        }
+
+        if (nativeType.IsMissing)
+        {
+            Console.Error.WriteLine($"Couldn't find type of: {nativeType}");
+
+            return parameter;
+        }
+
+        return isRef ? parameter.WithType(nativeType).AddModifiers(newModifier.WithTrailingTrivia(SyntaxFactory.Space)) : parameter.WithType(nativeType);
     }
 
     private static T GetNativeTypeNode<T>(T currentType, TypeSyntax nativeType) where T : SyntaxNode
@@ -111,20 +193,18 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         if (IsSpecialNativeType(nativeTypeName))
         {
-            // TODO: Extract "special" native types
+            ParameterSyntax newParameter = ExtractNativeTypeParameter(parameter, nativeTypeName);
+
+            return parameter != newParameter ? newParameter.WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList)) : parameter;
         }
-        else
+
+        if (!ExtractNativeType(nativeTypeName, out TypeSyntax paramNativeType))
         {
-            if (!ExtractNativeType(nativeTypeName, out TypeSyntax paramNativeType))
-            {
-                return parameter;
-            }
-
-            return GetNativeTypeNode(parameter, paramNativeType).WithAttributeLists(
-                parameter.AttributeLists.Remove(nativeTypeAttributeList));
+            return parameter;
         }
 
-        return parameter;
+        return GetNativeTypeNode(parameter, paramNativeType).WithAttributeLists(
+            parameter.AttributeLists.Remove(nativeTypeAttributeList));
     }
 
     public override SyntaxNode VisitEnumDeclaration(EnumDeclarationSyntax node)
@@ -161,29 +241,18 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     public override SyntaxNode VisitMethodDeclaration(MethodDeclarationSyntax node)
     {
         var nativeTypeAttributeList = GetNativeTypeAttributeList(node.AttributeLists);
+        var attributeLists = node.AttributeLists;
+        var replacedNode = node;
 
-        if (nativeTypeAttributeList is null ||
-            !ExtractNativeType(GetNativeTypeName(nativeTypeAttributeList), out TypeSyntax nativeType))
+        if (nativeTypeAttributeList is not null && ExtractNativeType(GetNativeTypeName(nativeTypeAttributeList), out TypeSyntax nativeType))
         {
-            return node;
+            attributeLists = attributeLists.Remove(nativeTypeAttributeList);
+            replacedNode = replacedNode.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType));
         }
 
-        var methodAttributeLists = node.AttributeLists.Remove(nativeTypeAttributeList);
-
-        node = node.ReplaceNode(node,
-            node.WithReturnType(GetNativeTypeNode(node.ReturnType, nativeType))
-                .WithAttributeLists(methodAttributeLists));
-
-        foreach (var childNode in node.ChildNodes())
-        {
-            if (childNode.IsKind(SyntaxKind.ParameterList) && childNode is ParameterListSyntax parameterList)
-            {
-                node = node.ReplaceNode(parameterList,
-                    parameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter));
-            }
-        }
-
-        return node;
+        return node.ReplaceNode(node,
+            replacedNode.WithAttributeLists(attributeLists)
+                .WithParameterList(node.ParameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter)));
     }
 
     public override SyntaxNode VisitOperatorDeclaration(OperatorDeclarationSyntax node)
