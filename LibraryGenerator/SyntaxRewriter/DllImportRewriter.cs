@@ -45,6 +45,7 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private static bool TypeRequiresMarshalAsAttribute(TypeSyntax type) => type.ToString() switch
     {
         "bool" => true,
+        "string" => true,
         _ => false
     };
 
@@ -72,11 +73,18 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         var attribute = SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("MarshalAs"));
         var unmanagedTypeName = SyntaxFactory.IdentifierName("UnmanagedType");
 
-        if (type.ToString() == "bool")
+        switch (type.ToString())
         {
-            argumentList = argumentList.Add(SyntaxFactory.AttributeArgument(
-                SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("Bool")))
-            );
+            case "bool":
+                argumentList = argumentList.Add(SyntaxFactory.AttributeArgument(
+                    SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("Bool")))
+                );
+                break;
+            case "string":
+                argumentList = argumentList.Add(SyntaxFactory.AttributeArgument(
+                    SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("LPStr")))
+                );
+                break;
         }
 
         return attribute.WithArgumentList(SyntaxFactory.AttributeArgumentList(argumentList));
