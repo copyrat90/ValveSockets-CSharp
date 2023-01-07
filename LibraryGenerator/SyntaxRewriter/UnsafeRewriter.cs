@@ -15,7 +15,7 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     }
 
     private static bool ShouldRewriteParameter(ParameterSyntax parameter) =>
-        parameter.Type.IsKind(SyntaxKind.PointerType);
+        parameter.Type.IsKind(SyntaxKind.PointerType) && !parameter.Modifiers.Any(SyntaxKind.RefKeyword);
 
     private static ParameterSyntax RewriteParameter(ParameterSyntax parameter) =>
         parameter.WithType(RewriteHelper.PointerToRefType(parameter.Type as PointerTypeSyntax));
