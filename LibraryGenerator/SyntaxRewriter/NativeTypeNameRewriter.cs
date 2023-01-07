@@ -37,9 +37,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             return false;
         }
 
-        // TODO: Add support for const pointer types
-        // TODO: Add support for pointer types
-
         switch (nativeType)
         {
             case "uint8":
@@ -78,58 +75,81 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private static ParameterSyntax ExtractNativeTypeParameter(ParameterSyntax parameter, string nativeTypeName)
     {
         SyntaxToken newModifier = SyntaxFactory.Token(SyntaxKind.None);
+        bool isPtrToConstPtr = nativeTypeName.EndsWith("*const *");
         bool isConst = nativeTypeName.StartsWith("const");
-        bool isRef = nativeTypeName.EndsWith("*");
-
-        // TODO: Deal with 'type* const *' types
+        bool isPtrToPtr = nativeTypeName.EndsWith("**");
+        bool isPtr = nativeTypeName.EndsWith("*") && !isPtrToConstPtr;
 
         if (isConst)
         {
             nativeTypeName = nativeTypeName[6..];
         }
 
-        if (isRef)
+        if (isPtr)
         {
             nativeTypeName = nativeTypeName[..^2];
+        }
+
+        if (isPtrToPtr)
+        {
+            nativeTypeName = nativeTypeName[..^3];
+            isPtr = true;
+        }
+
+        if (isPtrToConstPtr)
+        {
+            nativeTypeName = nativeTypeName[..^9];
         }
 
         switch (nativeTypeName)
         {
             case "char":
-                if (isRef)
+                if (isPtr)
                 {
                     nativeTypeName = "string";
                 }
                 break;
             case "void":
-                if (isRef && isConst)
+                if (isPtr && isConst)
                 {
                     nativeTypeName = "byte[]";
                 }
                 break;
+            case "uint16":
+                nativeTypeName = "ushort";
+                break;
             case "int64":
-                if (isRef && !isConst)
+                if (isPtr && !isConst)
                 {
                     nativeTypeName = "IntPtr";
                 }
                 break;
             case "uint64":
-                if (isRef && !isConst)
+                if (isPtr && !isConst)
                 {
                     nativeTypeName = "UIntPtr";
                 }
                 break;
         }
 
+        if (isPtrToConstPtr || isPtrToPtr)
+        {
+            nativeTypeName = $"{nativeTypeName}[]";
+        }
+
         var nativeType = SyntaxFactory.ParseTypeName(nativeTypeName).WithTriviaFrom(parameter.Type!);
 
-        if (isConst && isRef)
+        if (isConst && isPtr)
         {
             newModifier = SyntaxFactory.Token(SyntaxKind.InKeyword);
         }
-        else if (isRef)
+        else if (isPtr)
         {
             newModifier = SyntaxFactory.Token(SyntaxKind.RefKeyword);
+        }
+        else if (isPtrToConstPtr)
+        {
+            newModifier = SyntaxFactory.Token(SyntaxKind.OutKeyword);
         }
 
         if (nativeType.IsMissing)
@@ -139,7 +159,12 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             return parameter;
         }
 
-        return isRef ? parameter.WithType(nativeType).AddModifiers(newModifier.WithTrailingTrivia(SyntaxFactory.Space)) : parameter.WithType(nativeType);
+        if ((isPtr || isPtrToConstPtr) && !parameter.Modifiers.Any(modifier => modifier.IsKind(newModifier.Kind())))
+        {
+            return parameter.WithType(nativeType).AddModifiers(newModifier.WithTrailingTrivia(SyntaxFactory.Space));
+        }
+
+        return parameter.WithType(nativeType);
     }
 
     private static T GetNativeTypeNode<T>(T currentType, TypeSyntax nativeType) where T : SyntaxNode
@@ -153,9 +178,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
             return currentType;
         }
-
-        // TODO: Add support for IdentifierName
-        // TODO: Add support for PointerType
 
         if (currentType.IsKind(SyntaxKind.Parameter) && currentType is ParameterSyntax currentParameter)
         {
