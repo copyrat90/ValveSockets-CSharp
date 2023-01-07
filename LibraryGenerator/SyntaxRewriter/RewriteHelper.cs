@@ -38,6 +38,11 @@ static class RewriteHelper
 
     public static RefTypeSyntax PointerToRefType(PointerTypeSyntax node)
     {
+        if (node.ElementType.IsKind(SyntaxKind.PointerType) && node.ElementType is PointerTypeSyntax pointerElement)
+        {
+            return SyntaxFactory.RefType(GetRefKeyword, SyntaxFactory.ParseTypeName($"{pointerElement.ElementType.ToString()}[]")).WithTriviaFrom(node);
+        }
+
         return SyntaxFactory.RefType(GetRefKeyword, node.ElementType.WithTriviaFrom(node));
     }
 
