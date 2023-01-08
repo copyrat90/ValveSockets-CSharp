@@ -68,6 +68,7 @@ public class GameNetworkingSocketsLibrary : ILibrary
     public void Postprocess(Driver driver, ASTContext ctx)
     {
         ctx.IgnoreClassWithName("SteamNetAuthenticationStatus_t");
+        ctx.IgnoreClassWithName("SteamRelayNetworkStatus_t");
 
         foreach (var unit in ctx.TranslationUnits)
         {
