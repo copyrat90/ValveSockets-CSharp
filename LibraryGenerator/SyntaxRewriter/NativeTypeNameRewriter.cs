@@ -9,11 +9,32 @@ namespace LibraryGenerator.SyntaxRewriter;
 
 public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
-    public bool NeedsFixupVisit => false;
+    private static readonly List<SyntaxReference> CallbackParameters = new();
+
+    public bool NeedsFixupVisit => CallbackParameters.Count > 0;
 
     public SyntaxNode FixupVisit(SyntaxNode node)
     {
-        throw new NotImplementedException();
+        foreach (SyntaxReference reference in CallbackParameters)
+        {
+            ParameterSyntax referenceParam = (reference.GetSyntax() as ParameterSyntax)!;
+
+            foreach (var descendantNode in node.DescendantNodes())
+            {
+                if (descendantNode.IsKind(SyntaxKind.Parameter) && referenceParam.ToString() == descendantNode.ToString())
+                {
+                    ParameterSyntax parameter = (descendantNode as ParameterSyntax)!;
+                    string nativeTypeName = GetNativeTypeName(GetNativeTypeAttributeList(parameter.AttributeLists));
+                    ClassDeclarationSyntax classDeclaration = parameter.Parent!.Parent!.Parent as ClassDeclarationSyntax;
+
+                    // TODO: Add delegate to class
+
+                    break;
+                }
+            }
+        }
+
+        return node;
     }
 
     private static AttributeListSyntax GetNativeTypeAttributeList(SyntaxList<AttributeListSyntax> attributeLists) =>
