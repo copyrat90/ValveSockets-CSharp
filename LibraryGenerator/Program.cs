@@ -1,5 +1,6 @@
 ﻿using LibraryGenerator.CppSharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,8 @@ public static class Program
     private const string GNSBuildingUrl = $"{GNSRepoUrl}/blob/master/BUILDING.md";
 
     private const string OutputName = "Valve.Sockets";
+
+    private static readonly List<string> NonRemovableFiles = new(new [] { "Types.cs", "NativeTypeNameAttribute.cs" });
 
     private static string GetPInvokeGeneratorArgs(string gnsDir, string outputDir)
     {
@@ -62,6 +65,10 @@ public static class Program
         // Native library name
         builder.AppendLine("--libraryPath");
         builder.AppendLine(GNSRepo);
+
+        // Exclude declaration names
+        builder.AppendLine("--exclude");
+        builder.AppendLine("CalculateSteamNetworkingPOPIDFromString");
 
         // Output path
         builder.AppendLine("--output");
@@ -227,22 +234,16 @@ public static class Program
             Console.WriteLine($"Cleaning existing output directory: {outputDir}");
             foreach (var file in Directory.EnumerateFiles(outputDir, "*.cs", SearchOption.AllDirectories))
             {
-                #if DEBUG
-                if (Path.GetFileName(file) == "NativeTypeNameAttribute.cs")
+                if (NonRemovableFiles.Contains(Path.GetFileName(file)))
                 {
                     continue;
                 }
-                #endif
 
                 File.Delete(file);
             }
         }
 
         Directory.CreateDirectory(outputDir);
-
-        #if RELEASE
-        File.Copy(Path.Combine(Directory.GetCurrentDirectory(), "NativeTypeNameAttribute.cs"), Path.Combine(outputDir, "NativeTypeNameAttribute.cs"));
-        #endif
 
         Console.WriteLine($"[ClangSharp] Generating {GNSRepo} bindings...");
 

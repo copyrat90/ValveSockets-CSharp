@@ -8,6 +8,11 @@ public class PragmaRemover : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     public bool NeedsFixupVisit => false;
 
+    public SyntaxNode FixupVisit(SyntaxNode node)
+    {
+        throw new NotImplementedException();
+    }
+
     public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
     {
         if (trivia.IsDirective && trivia.ToString().StartsWith("#pragma warning disable CS0109"))
@@ -16,10 +21,5 @@ public class PragmaRemover : CSharpSyntaxRewriter, ISyntaxRewriter
         }
 
         return trivia;
-    }
-
-    public SyntaxNode FixupVisit(SyntaxNode node)
-    {
-        throw new NotImplementedException();
     }
 }
