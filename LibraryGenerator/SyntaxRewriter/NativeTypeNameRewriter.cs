@@ -2,6 +2,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LibraryGenerator.SyntaxRewriter;
@@ -26,6 +27,30 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private static bool IsSpecialNativeType(string nativeTypeName) =>
         nativeTypeName.Contains('*') || nativeTypeName.Contains("const") || nativeTypeName.Contains('&');
 
+    private static bool IsCallbackFunctionType(string nativeTypeName) => nativeTypeName.Contains('(') && nativeTypeName.Contains(')');
+
+    private static string GetCSharpType(string nativeType)
+    {
+        switch (nativeType)
+        {
+            case "uint8":
+                return "byte";
+            case "uint64":
+            case "size_t":
+                return "ulong";
+            case "uint32":
+                return "uint";
+            case "uint16":
+                return "ushort";
+            case "int64":
+                return "long";
+            case "char *":
+                return "string";
+            default:
+                return nativeType;
+        }
+    }
+
     private static bool ExtractNativeType(string nativeType, out TypeSyntax newType)
     {
         // TODO: This probably needs to be changed again
@@ -37,28 +62,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             return false;
         }
 
-        switch (nativeType)
-        {
-            case "uint8":
-                nativeType = "byte";
-                break;
-            case "uint64":
-            case "size_t":
-                nativeType = "ulong";
-                break;
-            case "uint32":
-                nativeType = "uint";
-                break;
-            case "uint16":
-                nativeType = "ushort";
-                break;
-            case "int64":
-                nativeType = "long";
-                break;
-            case "char *":
-                nativeType = "string";
-                break;
-        }
+        nativeType = GetCSharpType(nativeType);
 
         newType = SyntaxFactory.ParseTypeName(nativeType);
 
@@ -115,9 +119,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                     nativeTypeName = "byte[]";
                 }
                 break;
-            case "uint16":
-                nativeTypeName = "ushort";
-                break;
             case "int64":
                 if (isPtr && !isConst)
                 {
@@ -129,6 +130,9 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 {
                     nativeTypeName = "UIntPtr";
                 }
+                break;
+            default:
+                nativeTypeName = GetCSharpType(nativeTypeName);
                 break;
         }
 
@@ -213,6 +217,12 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         AttributeListSyntax nativeTypeAttributeList = GetNativeTypeAttributeList(parameter.AttributeLists);
         string nativeTypeName = GetNativeTypeName(nativeTypeAttributeList);
 
+        if (IsCallbackFunctionType(nativeTypeName))
+        {
+            CallbackParameters.Add(parameter.GetReference());
+            return parameter;
+        }
+
         if (IsSpecialNativeType(nativeTypeName))
         {
             ParameterSyntax newParameter = ExtractNativeTypeParameter(parameter, nativeTypeName);
@@ -281,8 +291,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     {
         var nativeTypeAttributeList = GetNativeTypeAttributeList(node.AttributeLists);
 
-        if (nativeTypeAttributeList is null ||
-            !ExtractNativeType(GetNativeTypeName(nativeTypeAttributeList), out TypeSyntax nativeType))
+        if (nativeTypeAttributeList is null || !ExtractNativeType(GetNativeTypeName(nativeTypeAttributeList), out TypeSyntax nativeType))
         {
             return node;
         }
