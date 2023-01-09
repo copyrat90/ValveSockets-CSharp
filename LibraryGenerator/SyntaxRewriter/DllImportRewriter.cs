@@ -11,28 +11,35 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
     private bool _hasCompilerServices;
     private bool _needsCompilerServices;
-    public bool NeedsFixupVisit => _needsCompilerServices;
+    public bool NeedsFixupVisit => true;
 
     public SyntaxNode FixupVisit(SyntaxNode node)
     {
-        foreach (var childNode in node.ChildNodes())
+        if (_needsCompilerServices)
         {
-            if (childNode.IsKind(SyntaxKind.UsingDirective))
+            _needsCompilerServices = false;
+
+            foreach (var childNode in node.ChildNodes())
             {
-                return node.InsertNodesAfter(
-                    childNode, new[]
-                    {
-                        SyntaxFactory.UsingDirective(
-                            SyntaxFactory.ParseName("System.Runtime.CompilerServices")
-                                .WithLeadingTrivia(SyntaxFactory.Space)
-                        ).WithSemicolonToken(
-                            SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken,
-                                SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
-                        )
-                    }
-                );
+                if (childNode.IsKind(SyntaxKind.UsingDirective))
+                {
+                    return node.InsertNodesAfter(
+                        childNode, new[]
+                        {
+                            SyntaxFactory.UsingDirective(
+                                SyntaxFactory.ParseName("System.Runtime.CompilerServices")
+                                    .WithLeadingTrivia(SyntaxFactory.Space)
+                            ).WithSemicolonToken(
+                                SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.SemicolonToken,
+                                    SyntaxFactory.TriviaList(SyntaxFactory.LineFeed))
+                            )
+                        }
+                    );
+                }
             }
         }
+
+        _hasCompilerServices = false;
 
         return node;
     }
@@ -92,7 +99,6 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         if (node.Name.ToString() == "System.Runtime.CompilerServices")
         {
             _hasCompilerServices = true;
-            _needsCompilerServices = false;
         }
 
         return node;
