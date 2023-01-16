@@ -31,7 +31,8 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 if (descendantNode.IsKind(SyntaxKind.ClassDeclaration))
                 {
                     classDeclaration = (descendantNode as ClassDeclarationSyntax)!;
-                    classMembers = new SyntaxList<MemberDeclarationSyntax>(classDeclaration.Members);
+                    // Approach 1:
+                    // classMembers = new SyntaxList<MemberDeclarationSyntax>(classDeclaration.Members);
                 }
 
                 if (descendantNode.IsKind(SyntaxKind.Parameter) && referenceParam.ToString() == descendantNode.ToString())
@@ -50,19 +51,22 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
                     if (!genCallbackFunctions.Contains(nativeTypeName))
                     {
-                        var newDelegate = GenerateDelegate(callbackFunctionName, parameters, returnType);
+                        var newDelegate = GenerateDelegate(callbackFunctionName, parameters, returnType).WithTriviaFrom(methodDeclaration);
                         classMembers = classMembers.Add(newDelegate);
                         Console.Error.WriteLine($"newDelegate: {newDelegate}");
 
                         genCallbackFunctions.Add(nativeTypeName);
                     }
 
-                    // node = node.ReplaceNode(parameter, parameter.WithType(SyntaxFactory.ParseTypeName(callbackFunctionName).WithTriviaFrom(parameter.Type!))
-                    //     .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList)));
+                    // Approach 1:
 
-                    classMembers = classMembers.Replace(classMembers.First(method => method.ToString() == methodDeclaration.ToString()), methodDeclaration.WithParameterList(
-                        methodDeclaration.ParameterList.RewriteParameterList(
-                            (param) => param.ToString() == parameter.ToString(), RewriteParameterToDelegate)));
+                    // classMembers = classMembers.Replace(classMembers.First(method => method.ToString() == methodDeclaration.ToString()), methodDeclaration.WithParameterList(
+                    //     methodDeclaration.ParameterList.RewriteParameterList(
+                    //         (param) => param.ToString() == parameter.ToString(), RewriteParameterToDelegate)));
+
+                    // Approach 2:
+                    node = node.ReplaceNode(parameter, parameter.WithType(SyntaxFactory.ParseTypeName(callbackFunctionName).WithTriviaFrom(parameter.Type!))
+                        .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList)));
                 }
             }
         }
@@ -70,8 +74,13 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         if (classDeclaration is not null && classMembers.Count != 0)
         {
             Console.Error.WriteLine("Writing members...");
-            Console.Error.WriteLine($"PLS WORK: {classDeclaration.WithMembers(classMembers)}");
-            node = node.ReplaceNode(classDeclaration, classDeclaration.WithMembers(classMembers));
+            // Approach 1:
+            // Console.Error.WriteLine($"PLS WORK: {classDeclaration.WithMembers(classMembers)}");
+            // node = node.ReplaceNode(classDeclaration, classDeclaration.WithMembers(classMembers));
+
+            // Approach 2:
+            Console.Error.WriteLine($"PLS WORK: {classDeclaration.AddMembers(classMembers.ToArray())}");
+            node = node.ReplaceNode(classDeclaration, classDeclaration.AddMembers(classMembers.ToArray()));
         }
 
         return node;
