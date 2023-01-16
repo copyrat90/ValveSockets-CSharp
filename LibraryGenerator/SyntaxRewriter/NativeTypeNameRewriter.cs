@@ -4,37 +4,113 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LibraryGenerator.SyntaxRewriter;
 
 public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 {
+    private static readonly Regex CallbackRegex = new(@"(.*)\(\*\)\((.*)\)");
+
     private static readonly List<SyntaxReference> CallbackParameters = new();
 
     public bool NeedsFixupVisit => CallbackParameters.Count > 0;
 
     public SyntaxNode FixupVisit(SyntaxNode node)
     {
+        HashSet<string> genCallbackFunctions = new();
+        ClassDeclarationSyntax classDeclaration = null;
+        SyntaxList<MemberDeclarationSyntax> classMembers = new();
+
         foreach (SyntaxReference reference in CallbackParameters)
         {
             ParameterSyntax referenceParam = (reference.GetSyntax() as ParameterSyntax)!;
 
             foreach (var descendantNode in node.DescendantNodes())
             {
+                if (descendantNode.IsKind(SyntaxKind.ClassDeclaration))
+                {
+                    classDeclaration = (descendantNode as ClassDeclarationSyntax)!;
+                    classMembers = new SyntaxList<MemberDeclarationSyntax>(classDeclaration.Members);
+                }
+
                 if (descendantNode.IsKind(SyntaxKind.Parameter) && referenceParam.ToString() == descendantNode.ToString())
                 {
                     ParameterSyntax parameter = (descendantNode as ParameterSyntax)!;
-                    string nativeTypeName = GetNativeTypeName(GetNativeTypeAttributeList(parameter.AttributeLists));
-                    ClassDeclarationSyntax classDeclaration = parameter.Parent!.Parent!.Parent as ClassDeclarationSyntax;
+                    MethodDeclarationSyntax methodDeclaration = (parameter.Parent!.Parent as MethodDeclarationSyntax)!;
+                    AttributeListSyntax nativeTypeAttributeList = GetNativeTypeAttributeList(parameter.AttributeLists);
+                    string nativeTypeName = GetNativeTypeName(nativeTypeAttributeList);
 
-                    // TODO: Add delegate to class
+                    Match match = CallbackRegex.Match(nativeTypeName);
+                    string returnType = match.Groups[1].Value.Trim();
+                    string[] parameters = match.Groups[2].Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                    string callbackFunctionName = parameter.Identifier.ToString().FirstToUpper();
 
-                    break;
+                    Console.Error.WriteLine($"Hi: {returnType} {callbackFunctionName} ({string.Join(',', parameters)})");
+
+                    if (!genCallbackFunctions.Contains(nativeTypeName))
+                    {
+                        var newDelegate = GenerateDelegate(callbackFunctionName, parameters, returnType);
+                        classMembers = classMembers.Add(newDelegate);
+                        Console.Error.WriteLine($"newDelegate: {newDelegate}");
+
+                        genCallbackFunctions.Add(nativeTypeName);
+                    }
+
+                    // node = node.ReplaceNode(parameter, parameter.WithType(SyntaxFactory.ParseTypeName(callbackFunctionName).WithTriviaFrom(parameter.Type!))
+                    //     .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList)));
+
+                    classMembers = classMembers.Replace(classMembers.First(method => method.ToString() == methodDeclaration.ToString()), methodDeclaration.WithParameterList(
+                        methodDeclaration.ParameterList.RewriteParameterList(
+                            (param) => param.ToString() == parameter.ToString(), RewriteParameterToDelegate)));
                 }
             }
         }
 
+        if (classDeclaration is not null && classMembers.Count != 0)
+        {
+            Console.Error.WriteLine("Writing members...");
+            Console.Error.WriteLine($"PLS WORK: {classDeclaration.WithMembers(classMembers)}");
+            node = node.ReplaceNode(classDeclaration, classDeclaration.WithMembers(classMembers));
+        }
+
         return node;
+    }
+
+    private static ParameterSyntax RewriteParameterToDelegate(ParameterSyntax parameter)
+    {
+        string callbackFuncName = parameter.Identifier.ToString().FirstToUpper();
+        AttributeListSyntax nativeTypeAttributeList = GetNativeTypeAttributeList(parameter.AttributeLists);
+
+        return parameter.WithType(SyntaxFactory.ParseTypeName(callbackFuncName).WithTriviaFrom(parameter.Type!))
+            .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList));
+    }
+
+    private static DelegateDeclarationSyntax GenerateDelegate(string name, string[] parameters, string returnType)
+    {
+        var parameterList = SyntaxFactory.SeparatedList<ParameterSyntax>();
+
+        int paramNum = 1;
+        foreach (string parameter in parameters)
+        {
+            parameterList = parameterList.Add(ExtractNativeTypeParameter(
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier($"param{paramNum}")),
+                parameter));
+
+            paramNum++;
+        }
+
+
+        return SyntaxFactory.DelegateDeclaration(
+            SyntaxFactory.List<AttributeListSyntax>(),
+            SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword)),
+            SyntaxFactory.Token(SyntaxFactory.TriviaList(SyntaxFactory.Space), SyntaxKind.DelegateKeyword, SyntaxFactory.TriviaList(SyntaxFactory.Space)),
+            SyntaxFactory.ParseTypeName(GetCSharpType(returnType)).WithTrailingTrivia(SyntaxFactory.Space),
+            SyntaxFactory.Identifier(name),
+            null, SyntaxFactory.ParameterList(parameterList),
+            SyntaxFactory.List<TypeParameterConstraintClauseSyntax>(),
+            SyntaxFactory.Token(SyntaxKind.SemicolonToken)
+        );
     }
 
     private static AttributeListSyntax GetNativeTypeAttributeList(SyntaxList<AttributeListSyntax> attributeLists) =>
@@ -50,8 +126,77 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
     private static bool IsCallbackFunctionType(string nativeTypeName) => nativeTypeName.Contains('(') && nativeTypeName.Contains(')');
 
+    private static bool IsSpecialTypePtrToConstPtr(string nativeType) => nativeType.EndsWith("*const *");
+    private static bool IsSpecialTypeConst(string nativeType) => nativeType.StartsWith("const");
+    private static bool IsSpecialTypePtrToPtr(string nativeType) => nativeType.EndsWith("**");
+    private static bool IsSpecialTypePtr(string nativeType) => nativeType.EndsWith("*") && !IsSpecialTypePtrToPtr(nativeType);
+
     private static string GetCSharpType(string nativeType)
     {
+        if (IsSpecialNativeType(nativeType))
+        {
+            bool isConst = IsSpecialTypeConst(nativeType);
+            bool isPtr = IsSpecialTypePtr(nativeType);
+            bool isPtrToPtr = IsSpecialTypePtrToPtr(nativeType);
+            bool isPtrToConstPtr = IsSpecialTypePtrToConstPtr(nativeType);
+
+            if (isConst)
+            {
+                nativeType = nativeType[6..];
+            }
+
+            if (isPtr)
+            {
+                nativeType = nativeType[..^2];
+            }
+
+            if (isPtrToPtr)
+            {
+                nativeType = nativeType[..^3];
+                isPtr = true;
+            }
+
+            if (isPtrToConstPtr)
+            {
+                nativeType = nativeType[..^9];
+            }
+
+            // Console.Error.WriteLine($"huh?: {nativeType} -- {isConst}, {isPtr}, {isPtrToPtr}, {isPtrToConstPtr}");
+
+            switch (nativeType)
+            {
+                case "char":
+                    // Console.Error.WriteLine("HERE");
+                    if (isPtr)
+                    {
+                        return "string";
+                    }
+                    break;
+                case "void":
+                    if (isPtr && isConst)
+                    {
+                        return "byte[]";
+                    }
+                    else if (isPtr)
+                    {
+                        return "IntPtr";
+                    }
+                    break;
+                case "int64":
+                    if (isPtr && !isConst)
+                    {
+                        return "IntPtr";
+                    }
+                    break;
+                case "uint64":
+                    if (isPtr && !isConst)
+                    {
+                        return "UIntPtr";
+                    }
+                    break;
+            }
+        }
+
         switch (nativeType)
         {
             case "uint8":
@@ -61,12 +206,12 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 return "ulong";
             case "uint32":
                 return "uint";
+            case "int32":
+                return "int";
             case "uint16":
                 return "ushort";
             case "int64":
                 return "long";
-            case "char *":
-                return "string";
             default:
                 return nativeType;
         }
@@ -83,9 +228,9 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
             return false;
         }
 
-        nativeType = GetCSharpType(nativeType);
+        newType = SyntaxFactory.ParseTypeName(GetCSharpType(nativeType));
 
-        newType = SyntaxFactory.ParseTypeName(nativeType);
+        // Console.Error.WriteLine($"EXTRACTED: {newType} <-- {nativeType}");
 
         if (newType.IsMissing)
         {
@@ -100,69 +245,27 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private static ParameterSyntax ExtractNativeTypeParameter(ParameterSyntax parameter, string nativeTypeName)
     {
         SyntaxToken newModifier = SyntaxFactory.Token(SyntaxKind.None);
-        bool isPtrToConstPtr = nativeTypeName.EndsWith("*const *");
-        bool isConst = nativeTypeName.StartsWith("const");
-        bool isPtrToPtr = nativeTypeName.EndsWith("**");
-        bool isPtr = nativeTypeName.EndsWith("*") && !isPtrToConstPtr;
 
-        if (isConst)
-        {
-            nativeTypeName = nativeTypeName[6..];
-        }
-
-        if (isPtr)
-        {
-            nativeTypeName = nativeTypeName[..^2];
-        }
-
-        if (isPtrToPtr)
-        {
-            nativeTypeName = nativeTypeName[..^3];
-            isPtr = true;
-        }
-
-        if (isPtrToConstPtr)
-        {
-            nativeTypeName = nativeTypeName[..^9];
-        }
-
-        switch (nativeTypeName)
-        {
-            case "char":
-                if (isPtr)
-                {
-                    nativeTypeName = "string";
-                }
-                break;
-            case "void":
-                if (isPtr && isConst)
-                {
-                    nativeTypeName = "byte[]";
-                }
-                break;
-            case "int64":
-                if (isPtr && !isConst)
-                {
-                    nativeTypeName = "IntPtr";
-                }
-                break;
-            case "uint64":
-                if (isPtr && !isConst)
-                {
-                    nativeTypeName = "UIntPtr";
-                }
-                break;
-            default:
-                nativeTypeName = GetCSharpType(nativeTypeName);
-                break;
-        }
+        bool isConst = IsSpecialTypeConst(nativeTypeName);
+        bool isPtr = IsSpecialTypePtr(nativeTypeName);
+        bool isPtrToPtr = IsSpecialTypePtrToPtr(nativeTypeName);
+        bool isPtrToConstPtr = IsSpecialTypePtrToConstPtr(nativeTypeName);
 
         if (isPtrToConstPtr || isPtrToPtr)
         {
             nativeTypeName = $"{nativeTypeName}[]";
         }
 
-        var nativeType = SyntaxFactory.ParseTypeName(nativeTypeName).WithTriviaFrom(parameter.Type!);
+        var nativeType = SyntaxFactory.ParseTypeName(GetCSharpType(nativeTypeName));
+
+        if (parameter.Type is not null)
+        {
+            nativeType = nativeType.WithTriviaFrom(parameter.Type);
+        }
+        else
+        {
+            nativeType = nativeType.WithTrailingTrivia(SyntaxFactory.Space);
+        }
 
         if (isConst && isPtr)
         {
@@ -179,7 +282,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         if (nativeType.IsMissing)
         {
-            Console.Error.WriteLine($"Couldn't find type of: {nativeType}");
+            Console.Error.WriteLine($"Couldn't find type of: {nativeTypeName}");
 
             return parameter;
         }
