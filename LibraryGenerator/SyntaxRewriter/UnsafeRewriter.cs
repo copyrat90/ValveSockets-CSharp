@@ -17,8 +17,18 @@ public class UnsafeRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
     private static bool ShouldRewriteParameter(ParameterSyntax parameter) =>
         parameter.Type.IsKind(SyntaxKind.PointerType) && !parameter.Modifiers.Any(SyntaxKind.RefKeyword);
 
-    private static ParameterSyntax RewriteParameter(ParameterSyntax parameter) =>
-        parameter.WithType(RewriteHelper.PointerToRefType(parameter.Type as PointerTypeSyntax));
+    private static ParameterSyntax RewriteParameter(ParameterSyntax parameter)
+    {
+        if (((PointerTypeSyntax)parameter.Type)!.ElementType.ToString() != "void")
+        {
+            return parameter.WithType(RewriteHelper.PointerToRefType(parameter.Type as PointerTypeSyntax));
+        }
+
+        // Rewrite void* to byte[]
+        return parameter.WithType(SyntaxFactory
+            .ArrayType(SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.ByteKeyword)))
+            .WithTriviaFrom(parameter.Type));
+    }
 
     private BlockSyntax FixReturnStatements(BlockSyntax node)
     {
