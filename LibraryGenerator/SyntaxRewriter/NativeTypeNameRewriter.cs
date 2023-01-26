@@ -31,8 +31,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 if (descendantNode.IsKind(SyntaxKind.ClassDeclaration))
                 {
                     classDeclaration = (descendantNode as ClassDeclarationSyntax)!;
-                    // Approach 1:
-                    // classMembers = new SyntaxList<MemberDeclarationSyntax>(classDeclaration.Members);
                 }
 
                 if (descendantNode.IsKind(SyntaxKind.Parameter) && referenceParam.ToString() == descendantNode.ToString())
@@ -47,24 +45,14 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                     string[] parameters = match.Groups[2].Value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                     string callbackFunctionName = parameter.Identifier.ToString().FirstToUpper();
 
-                    Console.Error.WriteLine($"Hi: {returnType} {callbackFunctionName} ({string.Join(',', parameters)})");
-
                     if (!genCallbackFunctions.Contains(nativeTypeName))
                     {
                         var newDelegate = GenerateDelegate(callbackFunctionName, parameters, returnType).WithTriviaFrom(methodDeclaration);
                         classMembers = classMembers.Add(newDelegate);
-                        Console.Error.WriteLine($"newDelegate: {newDelegate}");
 
                         genCallbackFunctions.Add(nativeTypeName);
                     }
 
-                    // Approach 1:
-
-                    // classMembers = classMembers.Replace(classMembers.First(method => method.ToString() == methodDeclaration.ToString()), methodDeclaration.WithParameterList(
-                    //     methodDeclaration.ParameterList.RewriteParameterList(
-                    //         (param) => param.ToString() == parameter.ToString(), RewriteParameterToDelegate)));
-
-                    // Approach 2:
                     node = node.ReplaceNode(parameter, parameter.WithType(SyntaxFactory.ParseTypeName(callbackFunctionName).WithTriviaFrom(parameter.Type!))
                         .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList)));
                 }
@@ -73,26 +61,17 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         if (classDeclaration is not null && classMembers.Count != 0)
         {
-            Console.Error.WriteLine("Writing members...");
-            // Approach 1:
-            // Console.Error.WriteLine($"PLS WORK: {classDeclaration.WithMembers(classMembers)}");
-            // node = node.ReplaceNode(classDeclaration, classDeclaration.WithMembers(classMembers));
+            // FIXME: It seems like classDeclaration is no longer valid after the first replacements have been made?
+            //        But there has to be a better way to do this.
+            //        This cost me way too much time and I would have expected an exception
+            //        if the node which is about to be replaced can't be found.
 
-            // Approach 2:
-            Console.Error.WriteLine($"PLS WORK: {classDeclaration.AddMembers(classMembers.ToArray())}");
-            node = node.ReplaceNode(classDeclaration, classDeclaration.AddMembers(classMembers.ToArray()));
+            node = node.InsertNodesBefore(
+                node.ChildNodes().ToArray()[^1].ChildNodes().ToArray()[^1],
+                new [] {classDeclaration.WithMembers(classMembers)});
         }
 
         return node;
-    }
-
-    private static ParameterSyntax RewriteParameterToDelegate(ParameterSyntax parameter)
-    {
-        string callbackFuncName = parameter.Identifier.ToString().FirstToUpper();
-        AttributeListSyntax nativeTypeAttributeList = GetNativeTypeAttributeList(parameter.AttributeLists);
-
-        return parameter.WithType(SyntaxFactory.ParseTypeName(callbackFuncName).WithTriviaFrom(parameter.Type!))
-            .WithAttributeLists(parameter.AttributeLists.Remove(nativeTypeAttributeList));
     }
 
     private static DelegateDeclarationSyntax GenerateDelegate(string name, string[] parameters, string returnType)
@@ -170,12 +149,10 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
                 nativeType = nativeType[..^9];
             }
 
-            // Console.Error.WriteLine($"huh?: {nativeType} -- {isConst}, {isPtr}, {isPtrToPtr}, {isPtrToConstPtr}");
 
             switch (nativeType)
             {
                 case "char":
-                    // Console.Error.WriteLine("HERE");
                     if (isPtr)
                     {
                         return "string";
@@ -238,8 +215,6 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
         }
 
         newType = SyntaxFactory.ParseTypeName(GetCSharpType(nativeType));
-
-        // Console.Error.WriteLine($"EXTRACTED: {newType} <-- {nativeType}");
 
         if (newType.IsMissing)
         {
@@ -383,7 +358,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         // node.BaseList.Types is a nightmare.
 
-        // Console.WriteLine($"\tEnums are not supported. {node.Identifier} currentType: {node.BaseList?.Types.FirstOrDefault()} nativeType: {nativeType}");
+        Console.WriteLine($"\tEnums are not supported. {node.Identifier} currentType: {node.BaseList?.Types.FirstOrDefault()}");
 
         return node;
     }
