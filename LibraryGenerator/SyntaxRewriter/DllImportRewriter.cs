@@ -226,6 +226,14 @@ public class DllImportRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
         var newParameters = node.ParameterList.RewriteParameterList(ShouldRewriteParameter, RewriteParameter);
 
+        if (node.ReturnType.IsKind(SyntaxKind.PointerType))
+        {
+            return node.ReplaceNode(node, node
+                .WithModifiers(newModifiers).WithReturnType(SyntaxFactory.ParseTypeName("IntPtr").WithTriviaFrom(node.ReturnType))
+                .WithAttributeLists(SyntaxFactory.List(newAttributeLists)).WithParameterList(newParameters)
+            );
+        }
+
         return node.ReplaceNode(node, node
             .WithModifiers(newModifiers)
             .WithAttributeLists(SyntaxFactory.List(newAttributeLists)).WithParameterList(newParameters)
