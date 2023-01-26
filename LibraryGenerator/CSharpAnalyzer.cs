@@ -21,7 +21,8 @@ public class CSharpAnalyzer
 
     public CSharpAnalyzer(string projectDirectory)
     {
-        _compilation = CSharpCompilation.Create(Path.GetDirectoryName(projectDirectory));
+        _compilation = CSharpCompilation.Create(Path.GetDirectoryName(projectDirectory),
+            options:new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         foreach (string filePath in Directory.EnumerateFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
         {
