@@ -16,7 +16,8 @@ namespace LibraryGenerator
             new DuplicateTypeRemover(),
             new NativeTypeNameRewriter(),
             new DllImportRewriter(),
-            new UnsafeRewriter()
+            new UnsafeRewriter(),
+            new OperatorRewriter()
         };
 
         public CSharpAnalyzer(string projectDirectory)
