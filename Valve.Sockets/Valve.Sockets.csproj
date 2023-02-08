@@ -5,5 +5,14 @@
         <TargetFramework>net7.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <ArrayNamespace>Valve.Sockets.ArrayStructs</ArrayNamespace>
+        <ArrayOutputPath>ArrayStructs</ArrayOutputPath>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Ryujinx.CustomTasks" Version="1.0.6" PrivateAssets="all" />
+    </ItemGroup>
 
 </Project>
