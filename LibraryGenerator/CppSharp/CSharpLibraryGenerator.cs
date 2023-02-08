@@ -2,31 +2,31 @@ using CppSharp.AST;
 using CppSharp.Generators;
 using CppSharp.Generators.CSharp;
 using System.Collections.Generic;
-using Type = CppSharp.AST.Type;
 
-namespace LibraryGenerator.CppSharp;
-
-public class CSharpLibraryGenerator : CSharpGenerator
+namespace LibraryGenerator.CppSharp
 {
-    private readonly CSharpTypePrinter typePrinter;
-
-    public CSharpLibraryGenerator(BindingContext context) : base(context)
+    public class CSharpLibraryGenerator : CSharpGenerator
     {
-        typePrinter = new CSharpTypePrinter(context);
-    }
+        private readonly CSharpTypePrinter typePrinter;
 
-    public override List<CodeGenerator> Generate(IEnumerable<TranslationUnit> units)
-    {
-        var outputs = new List<CodeGenerator>();
+        public CSharpLibraryGenerator(BindingContext context) : base(context)
+        {
+            typePrinter = new CSharpTypePrinter(context);
+        }
 
-        var gen = new CSharpLibrarySources(Context, units) { TypePrinter = typePrinter };
-        outputs.Add(gen);
+        public override List<CodeGenerator> Generate(IEnumerable<TranslationUnit> units)
+        {
+            var outputs = new List<CodeGenerator>();
 
-        return outputs;
-    }
+            var gen = new CSharpLibrarySources(Context, units) { TypePrinter = typePrinter };
+            outputs.Add(gen);
 
-    protected override string TypePrinterDelegate(Type type)
-    {
-        return type.Visit(typePrinter);
+            return outputs;
+        }
+
+        protected override string TypePrinterDelegate(Type type)
+        {
+            return type.Visit(typePrinter);
+        }
     }
 }

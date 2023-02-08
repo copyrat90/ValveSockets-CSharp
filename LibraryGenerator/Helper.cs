@@ -1,22 +1,23 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace LibraryGenerator;
-
-public static class Helper
+namespace LibraryGenerator
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string FirstToUpper(this string input)
+    public static class Helper
     {
-        if (string.IsNullOrEmpty(input))
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string FirstToUpper(this string input)
         {
-            return string.Empty;
-        }
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty;
+            }
 
-        return string.Create(input.Length, input, static (Span<char> chars, string str) =>
-        {
-            chars[0] = char.ToUpperInvariant(str[0]);
-            str.AsSpan(1).CopyTo(chars[1..]);
-        });
+            return string.Create(input.Length, input, static (Span<char> chars, string str) =>
+            {
+                chars[0] = char.ToUpperInvariant(str[0]);
+                str.AsSpan(1).CopyTo(chars[1..]);
+            });
+        }
     }
 }

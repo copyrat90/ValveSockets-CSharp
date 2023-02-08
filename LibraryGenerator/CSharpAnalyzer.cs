@@ -5,59 +5,60 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace LibraryGenerator;
-
-public class CSharpAnalyzer
+namespace LibraryGenerator
 {
-    private CSharpCompilation _compilation;
-    private readonly IReadOnlyCollection<ISyntaxRewriter> _syntaxRewriter = new List<ISyntaxRewriter>
+    public class CSharpAnalyzer
     {
-        new PragmaRemover(),
-        new DuplicateTypeRemover(),
-        new NativeTypeNameRewriter(),
-        new DllImportRewriter(),
-        new UnsafeRewriter()
-    };
-
-    public CSharpAnalyzer(string projectDirectory)
-    {
-        _compilation = CSharpCompilation.Create(Path.GetDirectoryName(projectDirectory),
-            options:new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        foreach (string filePath in Directory.EnumerateFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
+        private CSharpCompilation _compilation;
+        private readonly IReadOnlyCollection<ISyntaxRewriter> _syntaxRewriter = new List<ISyntaxRewriter>
         {
-            Console.WriteLine($"\tAdding {Path.GetFileName(filePath)} to syntax trees.");
-            SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath), path: filePath);
-            _compilation = _compilation.AddSyntaxTrees(tree);
-        }
-    }
+            new PragmaRemover(),
+            new DuplicateTypeRemover(),
+            new NativeTypeNameRewriter(),
+            new DllImportRewriter(),
+            new UnsafeRewriter()
+        };
 
-    public void FixFiles()
-    {
-        CSharpCompilation newCompilation = _compilation;
-
-        foreach (ISyntaxRewriter rewriter in _syntaxRewriter)
+        public CSharpAnalyzer(string projectDirectory)
         {
-            Console.WriteLine($"Running SyntaxRewriter: {rewriter}");
+            _compilation = CSharpCompilation.Create(Path.GetDirectoryName(projectDirectory),
+                options:new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            foreach (SyntaxTree sourceTree in _compilation.SyntaxTrees)
+            foreach (string filePath in Directory.EnumerateFiles(projectDirectory, "*.cs", SearchOption.AllDirectories))
             {
-                var newSourceRoot = rewriter.Visit(sourceTree.GetRoot());
-
-                if (rewriter.NeedsFixupVisit)
-                {
-                    newSourceRoot = rewriter.FixupVisit(newSourceRoot)!;
-                }
-
-                if (newSourceRoot != sourceTree.GetRoot())
-                {
-                    File.WriteAllText(sourceTree.FilePath, newSourceRoot.ToFullString());
-
-                    newCompilation = newCompilation.ReplaceSyntaxTree(sourceTree, sourceTree.WithChangedText(newSourceRoot.GetText()));
-                }
+                Console.WriteLine($"\tAdding {Path.GetFileName(filePath)} to syntax trees.");
+                SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(filePath), path: filePath);
+                _compilation = _compilation.AddSyntaxTrees(tree);
             }
+        }
 
-            _compilation = newCompilation;
+        public void FixFiles()
+        {
+            CSharpCompilation newCompilation = _compilation;
+
+            foreach (ISyntaxRewriter rewriter in _syntaxRewriter)
+            {
+                Console.WriteLine($"Running SyntaxRewriter: {rewriter}");
+
+                foreach (SyntaxTree sourceTree in _compilation.SyntaxTrees)
+                {
+                    var newSourceRoot = rewriter.Visit(sourceTree.GetRoot());
+
+                    if (rewriter.NeedsFixupVisit)
+                    {
+                        newSourceRoot = rewriter.FixupVisit(newSourceRoot)!;
+                    }
+
+                    if (newSourceRoot != sourceTree.GetRoot())
+                    {
+                        File.WriteAllText(sourceTree.FilePath, newSourceRoot.ToFullString());
+
+                        newCompilation = newCompilation.ReplaceSyntaxTree(sourceTree, sourceTree.WithChangedText(newSourceRoot.GetText()));
+                    }
+                }
+
+                _compilation = newCompilation;
+            }
         }
     }
 }

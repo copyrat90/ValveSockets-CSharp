@@ -2,24 +2,25 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 
-namespace LibraryGenerator.SyntaxRewriter;
-
-public class PragmaRemover : CSharpSyntaxRewriter, ISyntaxRewriter
+namespace LibraryGenerator.SyntaxRewriter
 {
-    public bool NeedsFixupVisit => false;
-
-    public SyntaxNode FixupVisit(SyntaxNode node)
+    public class PragmaRemover : CSharpSyntaxRewriter, ISyntaxRewriter
     {
-        throw new NotImplementedException();
-    }
+        public bool NeedsFixupVisit => false;
 
-    public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
-    {
-        if (trivia.IsDirective && trivia.ToString().StartsWith("#pragma warning disable CS0109"))
+        public SyntaxNode FixupVisit(SyntaxNode node)
         {
-            return new SyntaxTrivia();
+            throw new NotImplementedException();
         }
 
-        return trivia;
+        public override SyntaxTrivia VisitTrivia(SyntaxTrivia trivia)
+        {
+            if (trivia.IsDirective && trivia.ToString().StartsWith("#pragma warning disable CS0109"))
+            {
+                return new SyntaxTrivia();
+            }
+
+            return trivia;
+        }
     }
 }

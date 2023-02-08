@@ -68,7 +68,7 @@ public class NativeTypeNameRewriter : CSharpSyntaxRewriter, ISyntaxRewriter
 
             node = node.InsertNodesBefore(
                 node.ChildNodes().ToArray()[^1].ChildNodes().ToArray()[^1],
-                new [] {classDeclaration.WithMembers(classMembers)});
+                new [] {classDeclaration.WithMembers(classMembers).WithTrailingTrivia(SyntaxFactory.LineFeed, SyntaxFactory.LineFeed)});
         }
 
         return node;
