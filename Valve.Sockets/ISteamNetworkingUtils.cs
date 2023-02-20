@@ -158,7 +158,7 @@ namespace Valve.Sockets
         /// <para>Fetch ping time of best available relayed route from this host to</para>
         /// <para>the specified data center.</para>
         /// </summary>
-        int GetPingToDataCenter(uint popID, ref uint pViaRelayPoP);
+        int GetPingToDataCenter(uint popID, ref SteamNetworkingPOPID pViaRelayPoP);
 
         /// <summary>Get *direct* ping time to the relays at the data center.</summary>
         int GetDirectPingToPOP(uint popID);
@@ -170,7 +170,7 @@ namespace Valve.Sockets
         /// <para>Get list of all POP IDs.  Returns the number of entries that were filled into</para>
         /// <para>your list.</para>
         /// </summary>
-        int GetPOPList(ref uint list, int nListSz);
+        int GetPOPList(ref SteamNetworkingPOPID[] list, int nListSz);
 
         /// <summary>Fetch current timestamp.  This timer has the following properties:</summary>
         /// <remarks>
@@ -238,32 +238,6 @@ namespace Valve.Sockets
         /// </remarks>
         global::Valve.Sockets.EResult GetRealIdentityForFakeIP(global::Valve.Sockets.SteamNetworkingIPAddr fakeIP, global::Valve.Sockets.SteamNetworkingIdentity pOutRealIdentity);
 
-        bool SetGlobalConfigValueInt32();
-
-        bool SetGlobalConfigValueFloat();
-
-        bool SetGlobalConfigValueString();
-
-        bool SetGlobalConfigValuePtr();
-
-        bool SetConnectionConfigValueInt32();
-
-        bool SetConnectionConfigValueFloat();
-
-        bool SetConnectionConfigValueString();
-
-        bool SetGlobalCallbackSteamNetConnectionStatusChanged();
-
-        bool SetGlobalCallbackSteamNetAuthenticationStatusChanged();
-
-        bool SetGlobalCallbackSteamRelayNetworkStatusChanged();
-
-        bool SetGlobalCallbackFakeIPResult();
-
-        bool SetGlobalCallbackMessagesSessionRequest();
-
-        bool SetGlobalCallbackMessagesSessionFailed();
-
         /// <summary>
         /// <para>Set a configuration value.</para>
         /// <para>- eValue: which value is being set</para>
@@ -276,7 +250,7 @@ namespace Valve.Sockets
         /// <para>NOTE: When setting pointers (e.g. callback functions), do not pass the function pointer directly.</para>
         /// <para>Your argument should be a pointer to a function pointer.</para>
         /// </summary>
-        bool SetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, long scopeObj, global::Valve.Sockets.ESteamNetworkingConfigDataType eDataType, __IntPtr pArg);
+        bool SetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, global::Valve.Sockets.ESteamNetworkingConfigDataType eDataType, byte[] pArg);
 
         /// <summary>
         /// <para>Set a configuration value, using a struct to pass the value.</para>
@@ -295,7 +269,7 @@ namespace Valve.Sockets
         /// <para>- pResult: Where to put the result.  Pass NULL to query the required buffer size.  (k_ESteamNetworkingGetConfigValue_BufferTooSmall will be returned.)</para>
         /// <para>- cbResult: IN: the size of your buffer.  OUT: the number of bytes filled in or required.</para>
         /// </summary>
-        global::Valve.Sockets.ESteamNetworkingGetConfigValueResult GetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, long scopeObj, ref global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, __IntPtr pResult, ref ulong cbResult);
+        global::Valve.Sockets.ESteamNetworkingGetConfigValueResult GetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, ref global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, __IntPtr pResult, ref ulong cbResult);
 
         /// <summary>
         /// <para>Get info about a configuration value.  Returns the name of the value,</para>
@@ -326,15 +300,6 @@ namespace Valve.Sockets
         void SteamNetworkingIdentityToString(global::Valve.Sockets.SteamNetworkingIdentity identity, string buf, ulong cbBuf);
 
         bool SteamNetworkingIdentityParseString(global::Valve.Sockets.SteamNetworkingIdentity pIdentity, string pszStr);
-
-        global::Valve.Sockets.ISteamNetworkingUtils OperatorEqual();
-
-        global::Valve.Sockets.ISteamNetworkingUtils SteamNetworkingUtilsLibV4();
-
-        global::Valve.Sockets.ISteamNetworkingUtils SteamNetworkingUtilsLib();
-
-        global::Valve.Sockets.ISteamNetworkingUtils SteamNetworkingUtils();
-
         void SteamNetworkingIPAddrToString();
 
         bool SteamNetworkingIPAddrParseString();
