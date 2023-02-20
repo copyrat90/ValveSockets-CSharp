@@ -259,7 +259,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultLimitExceeded: there was already too much data queued to be sent.</para>
         /// <para>(See k_ESteamNetworkingConfig_SendBufferSize)</para>
         /// </remarks>
-        global::Valve.Sockets.EResult SendMessageToConnection(uint hConn, __IntPtr pData, uint cbData, int nSendFlags, ref long pOutMessageNumber);
+        global::Valve.Sockets.EResult SendMessageToConnection(uint hConn, byte[] pData, uint cbData, int nSendFlags, ref long pOutMessageNumber);
 
         /// <summary>
         /// <para>Send one or more messages without copying the message payload.</para>
@@ -292,7 +292,7 @@ namespace Valve.Sockets
         /// <para>See ISteamNetworkingSockets::SendMessageToConnection for possible</para>
         /// <para>failure codes.</para>
         /// </remarks>
-        void SendMessages(int nMessages, global::Valve.Sockets.SteamNetworkingMessage_t pMessages, ref long pOutMessageNumberOrResult);
+        void SendMessages(int nMessages, global::Valve.Sockets.SteamNetworkingMessage_t[] pMessages, ref long pOutMessageNumberOrResult);
 
         /// <summary>
         /// <para>Flush any messages waiting on the Nagle timer and send them</para>
@@ -327,7 +327,7 @@ namespace Valve.Sockets
         /// <para>of them free up resources after you are done.  It is safe to keep the object alive for</para>
         /// <para>a little while (put it into some queue, etc), and you may call Release() from any thread.</para>
         /// </remarks>
-        int ReceiveMessagesOnConnection(uint hConn, global::Valve.Sockets.SteamNetworkingMessage_t ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnConnection(uint hConn, ref global::Valve.Sockets.SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages);
 
         /// <summary>Returns basic information about the high-level state of the connection.</summary>
         bool GetConnectionInfo(uint hConn, global::Valve.Sockets.SteamNetConnectionInfo_t pInfo);
@@ -391,7 +391,7 @@ namespace Valve.Sockets
         /// <para>"localhost" identity.  If you use real network loopback, this might be translated to the</para>
         /// <para>actual bound loopback port.  Otherwise, the port will be zero.</para>
         /// </remarks>
-        bool CreateSocketPair(ref uint pOutConnection1, ref uint pOutConnection2, bool bUseNetworkLoopback, global::Valve.Sockets.SteamNetworkingIdentity pIdentity1, global::Valve.Sockets.SteamNetworkingIdentity pIdentity2);
+        bool CreateSocketPair(ref HSteamNetConnection pOutConnection1, ref HSteamNetConnection pOutConnection2, bool bUseNetworkLoopback, global::Valve.Sockets.SteamNetworkingIdentity pIdentity1, global::Valve.Sockets.SteamNetworkingIdentity pIdentity2);
 
         /// <summary>
         /// <para>Configure multiple outbound messages streams ("lanes") on a connection, and</para>
@@ -552,14 +552,14 @@ namespace Valve.Sockets
         /// <para>appear consecutively in the list; they may be interleaved with messages for</para>
         /// <para>other connections.)</para>
         /// </remarks>
-        int ReceiveMessagesOnPollGroup(uint hPollGroup, global::Valve.Sockets.SteamNetworkingMessage_t ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnPollGroup(uint hPollGroup, ref global::Valve.Sockets.SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages);
 
         /// <summary>
         /// <para>Call this when you receive a ticket from your backend / matchmaking system.  Puts the</para>
         /// <para>ticket into a persistent cache, and optionally returns the parsed ticket.</para>
         /// </summary>
         /// <remarks>See stamdatagram_ticketgen.h for more details.</remarks>
-        bool ReceivedRelayAuthTicket(__IntPtr pvTicket, int cbTicket, global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
+        bool ReceivedRelayAuthTicket(byte[] pvTicket, int cbTicket, global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         /// <summary>
         /// <para>Search cache for a ticket to talk to the server on the specified virtual port.</para>
@@ -634,7 +634,7 @@ namespace Valve.Sockets
         /// <para>NOTE: The returned blob is not encrypted.  Send it to your backend, but don't</para>
         /// <para>directly share it with clients.</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetHostedDedicatedServerAddress(global::Valve.Sockets.SteamDatagramHostedAddress pRouting);
+        global::Valve.Sockets.EResult GetHostedDedicatedServerAddress(ref global::Valve.Sockets.SteamDatagramHostedAddress pRouting);
 
         /// <summary>
         /// <para>Create a listen socket on the specified virtual port.  The physical UDP port to use</para>
@@ -681,7 +681,7 @@ namespace Valve.Sockets
         /// <para>NOTE: The routing blob returned here is not encrypted.  Send it to your backend</para>
         /// <para>and don't share it directly with clients.</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetGameCoordinatorServerLogin(global::Valve.Sockets.SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob, __IntPtr pBlob);
+        global::Valve.Sockets.EResult GetGameCoordinatorServerLogin(global::Valve.Sockets.SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob, ref byte[] pBlob);
 
         /// <summary>
         /// <para>Create a P2P "client" connection that does signaling over a custom</para>
@@ -744,7 +744,7 @@ namespace Valve.Sockets
         /// <para>If you expect to be using relayed connections, then you probably want</para>
         /// <para>to call ISteamNetworkingUtils::InitRelayNetworkAccess() when your app initializes</para>
         /// </remarks>
-        bool ReceivedP2PCustomSignal(__IntPtr pMsg, int cbMsg, global::Valve.Sockets.ISteamNetworkingSignalingRecvContext pContext);
+        bool ReceivedP2PCustomSignal(ref byte[] pMsg, int cbMsg, global::Valve.Sockets.ISteamNetworkingSignalingRecvContext pContext);
 
         /// <summary>
         /// <para>Get blob that describes a certificate request.  You can send this to your game coordinator.</para>
@@ -753,13 +753,13 @@ namespace Valve.Sockets
         /// <para>size.  (512 bytes is a conservative estimate.)</para>
         /// </summary>
         /// <remarks>Pass this blob to your game coordinator and call SteamDatagram_CreateCert.</remarks>
-        bool GetCertificateRequest(ref int pcbBlob, __IntPtr pBlob, Span<char> errMsg);
+        bool GetCertificateRequest(ref int pcbBlob, ref byte[] pBlob, ref SteamNetworkingErrMsg errMsg);
 
         /// <summary>
         /// <para>Set the certificate.  The certificate blob should be the output of</para>
         /// <para>SteamDatagram_CreateCert.</para>
         /// </summary>
-        bool SetCertificate(__IntPtr pCertificate, int cbCertificate, Span<char> errMsg);
+        bool SetCertificate(byte[] pCertificate, int cbCertificate, ref SteamNetworkingErrMsg errMsg);
 
         /// <summary>
         /// <para>Reset the identity associated with this instance.</para>

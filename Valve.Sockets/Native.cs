@@ -192,11 +192,11 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial EResult SteamAPI_ISteamNetworkingSockets_SendMessageToConnection(IntPtr self,uint hConn,in byte[] pData,uint cbData,int nSendFlags,ref IntPtr pOutMessageNumber);
+        public static partial EResult SteamAPI_ISteamNetworkingSockets_SendMessageToConnection(IntPtr self,uint hConn,in byte[] pData,uint cbData,int nSendFlags,ref long pOutMessageNumber);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamAPI_ISteamNetworkingSockets_SendMessages(IntPtr self,int nMessages,[MarshalUsing(CountElementName = nameof(nMessages))] ref SteamNetworkingMessage_t[] pMessages,ref IntPtr pOutMessageNumberOrResult);
+        public static partial void SteamAPI_ISteamNetworkingSockets_SendMessages(IntPtr self,int nMessages,[MarshalUsing(CountElementName = nameof(nMessages))] ref SteamNetworkingMessage_t[] pMessages,ref long pOutMessageNumberOrResult);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -295,7 +295,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial EResult SteamAPI_ISteamNetworkingSockets_GetGameCoordinatorServerLogin(IntPtr self,ref SteamDatagramGameCoordinatorServerLogin pLoginInfo,ref int pcbSignedBlob,byte pBlob);
+        public static partial EResult SteamAPI_ISteamNetworkingSockets_GetGameCoordinatorServerLogin(IntPtr self,ref SteamDatagramGameCoordinatorServerLogin pLoginInfo,ref int pcbSignedBlob, [MarshalUsing(CountElementName = nameof(pcbSignedBlob))]ref byte[] pBlob);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -304,17 +304,17 @@ namespace Valve.Sockets
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(IntPtr self,in byte[] pMsg,int cbMsg,ref ISteamNetworkingSignalingRecvContext pContext);
+        public static partial bool SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(IntPtr self,[MarshalUsing(CountElementName = nameof(cbMsg))]ref byte[] pMsg,int cbMsg,ref ISteamNetworkingSignalingRecvContext pContext);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(IntPtr self,ref int pcbBlob,byte pBlob,SteamNetworkingErrMsg errMsg);
+        public static partial bool SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(IntPtr self,ref int pcbBlob,[MarshalUsing(CountElementName = nameof(pcbBlob))]ref byte[] pBlob, ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool SteamAPI_ISteamNetworkingSockets_SetCertificate(IntPtr self,in byte[] pCertificate,int cbCertificate,SteamNetworkingErrMsg errMsg);
+        public static partial bool SteamAPI_ISteamNetworkingSockets_SetCertificate(IntPtr self,in byte[] pCertificate,int cbCertificate,ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
