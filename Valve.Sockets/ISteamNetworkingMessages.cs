@@ -133,22 +133,6 @@ namespace Valve.Sockets
         /// <para>indefinitely to obtain the reason for failure.</para>
         /// </remarks>
         global::Valve.Sockets.ESteamNetworkingConnectionState GetSessionConnectionInfo(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, global::Valve.Sockets.SteamNetConnectionInfo_t pConnectionInfo, global::Valve.Sockets.SteamNetConnectionRealTimeStatus_t pQuickStatus);
-
-        global::Valve.Sockets.ISteamNetworkingMessages OperatorEqual();
-
-        void ISteamNetworkingMessages();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamNetworkingMessagesLibV2();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamNetworkingMessagesLib();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamGameServerNetworkingMessagesLibV2();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamGameServerNetworkingMessagesLib();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamNetworkingMessages();
-
-        global::Valve.Sockets.ISteamNetworkingMessages SteamGameServerNetworkingMessages();
     }
 
     public partial interface ISteamNetworkingMessagesInternal : global::Valve.Sockets.ISteamNetworkingMessages

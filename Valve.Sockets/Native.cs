@@ -376,7 +376,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial int SteamAPI_ISteamNetworkingUtils_GetPOPList(IntPtr self,ref SteamNetworkingPOPID list,int nListSz);
+        public static partial int SteamAPI_ISteamNetworkingUtils_GetPOPList(IntPtr self, [MarshalUsing(CountElementName = nameof(nListSz))] ref SteamNetworkingPOPID[] list,int nListSz);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -384,7 +384,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction(IntPtr self,ESteamNetworkingSocketsDebugOutputType eDetailLevel,IntPtr pfnFunc);
+        public static partial void SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction(IntPtr self,ESteamNetworkingSocketsDebugOutputType eDetailLevel,ref FSteamNetworkingSocketsDebugOutput pfnFunc);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -448,11 +448,12 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial ESteamNetworkingGetConfigValueResult SteamAPI_ISteamNetworkingUtils_GetConfigValue(IntPtr self,ESteamNetworkingConfigValue eValue,ESteamNetworkingConfigScope eScopeType,IntPtr scopeObj,ref ESteamNetworkingConfigDataType pOutDataType,byte pResult,ref ulong cbResult);
+        public static partial ESteamNetworkingGetConfigValueResult SteamAPI_ISteamNetworkingUtils_GetConfigValue(IntPtr self,ESteamNetworkingConfigValue eValue,ESteamNetworkingConfigScope eScopeType,IntPtr scopeObj,ref ESteamNetworkingConfigDataType pOutDataType,IntPtr pResult,ref ulong cbResult);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial IntPtr SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo(IntPtr self,ESteamNetworkingConfigValue eValue,ref ESteamNetworkingConfigDataType pOutDataType,ref ESteamNetworkingConfigScope pOutScope);
+        [return: MarshalAs(UnmanagedType.LPStr)]
+        public static partial string SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo(IntPtr self,ESteamNetworkingConfigValue eValue,ref ESteamNetworkingConfigDataType pOutDataType,ref ESteamNetworkingConfigScope pOutScope);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
