@@ -1,0 +1,64 @@
+name: Publish Nuget package
+
+on:
+#  push:
+#    branches:
+#      - master
+#    paths-ignore:
+#      - ".gitignore"
+#      - ".editorconfig"
+#      - ".gitattributes"
+#      - ".github/**"
+#      - "*.md"
+  workflow_dispatch:
+    inputs:
+      publish_version:
+        description: Version to publish
+        type: string
+        required: true
+      add_sha_postfix:
+        description: Add commit sha as postfix
+        type: boolean
+
+concurrency: publish
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Get short sha
+        id: git_short_sha
+        run: |
+          echo "result=$(git rev-parse --short "${{ github.sha }}")" >> $GITHUB_OUTPUT
+
+#      - name: Get version info
+#        id: version_info
+#        run: |
+#          [[ "${{ github.ref_name }}" == "master" ]] \
+#          && echo "build_version=${{ env.BASE_VERSION }}.${{ github.run_number }}" >> $GITHUB_OUTPUT \
+#          || echo "build_version=${{ env.BASE_VERSION }}.${{ github.run_number }}-${{ steps.git_short_sha.outputs.result }}" >> $GITHUB_OUTPUT
+
+      - name: Get version info
+        id: version_info
+        run: |
+          [[ "${{ inputs.add_sha_postfix }}" == "true" ]] \
+          && echo "build_version=${{ inputs.publish_version }}-${{ steps.git_short_sha.outputs.result }}" >> $GITHUB_OUTPUT \
+          || echo "build_version=${{ inputs.publish_version }}" >> $GITHUB_OUTPUT
+
+      - name: Package project
+        run: |
+          dotnet pack -c Release --property:Version="${{ steps.version_info.outputs.build_version }}"
+        working-directory: Valve.Sockets
+
+      - name: Publish Nuget package
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push ./*/bin/Release/*.nupkg -k "$NUGET_AUTH_TOKEN" -s https://api.nuget.org/v3/index.json
