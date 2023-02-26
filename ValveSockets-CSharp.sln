@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryGenerator", "LibraryGenerator\LibraryGenerator.csproj", "{08A48B5A-CA84-4EF8-A99F-61C9AA93F641}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Valve.Sockets.Reference", "Valve.Sockets.Reference\Valve.Sockets.Reference.csproj", "{824F1DDD-41F6-4865-AEC6-E161217112CD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Valve.Sockets", "Valve.Sockets\Valve.Sockets.csproj", "{1F4E640A-606E-4FBC-BCCB-5F5FEA431CE4}"
 EndProject
 Global
@@ -22,10 +20,6 @@ Global
 		{08A48B5A-CA84-4EF8-A99F-61C9AA93F641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08A48B5A-CA84-4EF8-A99F-61C9AA93F641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08A48B5A-CA84-4EF8-A99F-61C9AA93F641}.Release|Any CPU.Build.0 = Release|Any CPU
-		{824F1DDD-41F6-4865-AEC6-E161217112CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{824F1DDD-41F6-4865-AEC6-E161217112CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{824F1DDD-41F6-4865-AEC6-E161217112CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{824F1DDD-41F6-4865-AEC6-E161217112CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F4E640A-606E-4FBC-BCCB-5F5FEA431CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F4E640A-606E-4FBC-BCCB-5F5FEA431CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F4E640A-606E-4FBC-BCCB-5F5FEA431CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
