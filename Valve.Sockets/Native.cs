@@ -114,9 +114,14 @@ namespace Valve.Sockets
         public const int k_cchGameExtraInfoMax = 64;
 
         [LibraryImport("GameNetworkingSockets")]
+        [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static partial bool GameNetworkingSockets_Init(IntPtr pIdentity, ref SteamNetworkingErrMsg errMsg);
+
+        [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool GameNetworkingSockets_Init(in SteamNetworkingIdentity pIdentity,SteamNetworkingErrMsg errMsg);
+        public static partial bool GameNetworkingSockets_Init(in SteamNetworkingIdentity pIdentity,ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]

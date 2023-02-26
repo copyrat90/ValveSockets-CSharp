@@ -5,8 +5,8 @@ using Valve.Sockets.ArrayStructs;
 namespace Valve.Sockets
 {
     // These are unlikely to change, but not as easy to automatically extract in a nice format.
-// So the easiest solution is to provide them manually.
-// Types are from: GameNetworkingSockets/include/steam/steamnetworkingtypes.h
+    // So the easiest solution is to provide them manually.
+    // Types are from: GameNetworkingSockets/include/steam/steamnetworkingtypes.h
 
     /// Handle used to identify a connection to a remote host.
     public struct HSteamNetConnection
