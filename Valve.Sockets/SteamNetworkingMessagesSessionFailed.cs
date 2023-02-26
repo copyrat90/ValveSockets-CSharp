@@ -16,9 +16,9 @@ namespace Valve.Sockets
     /// <para>none, connecting, and findingroute again.</para>
     /// </remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public partial struct SteamNetworkingMessagesSessionFailed_t
+    public partial struct SteamNetworkingMessagesSessionFailed
     {
-        public SteamNetConnectionInfo_t m_info;
+        public SteamNetConnectionInfo m_info;
 
         public const uint k_iCallback = Constants.k_iSteamNetworkingMessagesCallbacks + 2;
     }

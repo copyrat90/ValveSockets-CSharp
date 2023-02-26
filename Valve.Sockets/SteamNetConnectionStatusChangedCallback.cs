@@ -36,11 +36,11 @@ namespace Valve.Sockets
     /// <para>state by the time you process this callback.</para>
     /// <para>Also note that callbacks will be posted when connections are created and destroyed by your own API calls.</para>
     /// </remarks>
-    public partial struct SteamNetConnectionStatusChangedCallback_t
+    public partial struct SteamNetConnectionStatusChangedCallback
     {
         public uint m_hConn;
 
-        public SteamNetConnectionInfo_t m_info;
+        public SteamNetConnectionInfo m_info;
 
         public ESteamNetworkingConnectionState m_eOldState;
 

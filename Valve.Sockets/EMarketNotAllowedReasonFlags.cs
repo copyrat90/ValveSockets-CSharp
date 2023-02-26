@@ -3,11 +3,11 @@ namespace Valve.Sockets
     public enum EMarketNotAllowedReasonFlags : uint
     {
         k_EMarketNotAllowedReason_None = 0,
-        k_EMarketNotAllowedReason_TemporaryFailure = (1 << 0),
+        k_EMarketNotAllowedReasonemporaryFailure = (1 << 0),
         k_EMarketNotAllowedReason_AccountDisabled = (1 << 1),
         k_EMarketNotAllowedReason_AccountLockedDown = (1 << 2),
         k_EMarketNotAllowedReason_AccountLimited = (1 << 3),
-        k_EMarketNotAllowedReason_TradeBanned = (1 << 4),
+        k_EMarketNotAllowedReasonradeBanned = (1 << 4),
         k_EMarketNotAllowedReason_AccountNotTrusted = (1 << 5),
         k_EMarketNotAllowedReason_SteamGuardNotEnabled = (1 << 6),
         k_EMarketNotAllowedReason_SteamGuardOnlyRecentlyEnabled = (1 << 7),

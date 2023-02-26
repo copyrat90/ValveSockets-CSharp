@@ -16,9 +16,9 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public SteamNetworkingMessage_t AllocateMessage(int cbAllocateBuffer)
+        public SteamNetworkingMessage AllocateMessage(int cbAllocateBuffer)
         {
-            return Marshal.PtrToStructure<SteamNetworkingMessage_t>(Native.SteamAPI_ISteamNetworkingUtils_AllocateMessage(_instance, cbAllocateBuffer));
+            return Marshal.PtrToStructure<SteamNetworkingMessage>(Native.SteamAPI_ISteamNetworkingUtils_AllocateMessage(_instance, cbAllocateBuffer));
         }
 
         public void InitRelayNetworkAccess()
@@ -26,33 +26,33 @@ namespace Valve.Sockets
             Native.SteamAPI_ISteamNetworkingUtils_InitRelayNetworkAccess(_instance);
         }
 
-        public ESteamNetworkingAvailability GetRelayNetworkStatus(SteamRelayNetworkStatus_t pDetails)
+        public ESteamNetworkingAvailability GetRelayNetworkStatus(SteamRelayNetworkStatus pDetails)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_GetRelayNetworkStatus(_instance, ref pDetails);
         }
 
-        public float GetLocalPingLocation(SteamNetworkPingLocation_t result)
+        public float GetLocalPingLocation(SteamNetworkPingLocation result)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_GetLocalPingLocation(_instance, result);
         }
 
-        public int EstimatePingTimeBetweenTwoLocations(SteamNetworkPingLocation_t location1, SteamNetworkPingLocation_t location2)
+        public int EstimatePingTimeBetweenTwoLocations(SteamNetworkPingLocation location1, SteamNetworkPingLocation location2)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeBetweenTwoLocations(_instance, location1,
                 location2);
         }
 
-        public int EstimatePingTimeFromLocalHost(SteamNetworkPingLocation_t remoteLocation)
+        public int EstimatePingTimeFromLocalHost(SteamNetworkPingLocation remoteLocation)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeFromLocalHost(_instance, remoteLocation);
         }
 
-        public void ConvertPingLocationToString(SteamNetworkPingLocation_t location, string pszBuf, int cchBufSize)
+        public void ConvertPingLocationToString(SteamNetworkPingLocation location, string pszBuf, int cchBufSize)
         {
             Native.SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString(_instance, location, ref pszBuf, cchBufSize);
         }
 
-        public bool ParsePingLocationString(string pszString, SteamNetworkPingLocation_t result)
+        public bool ParsePingLocationString(string pszString, SteamNetworkPingLocation result)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_ParsePingLocationString(_instance, pszString, result);
         }

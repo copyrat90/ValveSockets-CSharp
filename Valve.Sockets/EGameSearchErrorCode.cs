@@ -1,6 +1,6 @@
 namespace Valve.Sockets
 {
-    public enum EGameSearchErrorCode_t : uint
+    public enum EGameSearchErrorCode : uint
     {
         k_EGameSearchErrorCode_OK = 1,
         k_EGameSearchErrorCode_Failed_Search_Already_In_Progress = 2,

@@ -2,7 +2,7 @@ using System;
 
 namespace Valve.Sockets
 {
-    public partial struct SteamNetworkingMessage_t
+    public partial struct SteamNetworkingMessage
     {
         public IntPtr m_pData;
 
@@ -25,7 +25,7 @@ namespace Valve.Sockets
 
         public void Dispose()
         {
-            Native.SteamAPI_SteamNetworkingMessage_t_Release(ref this);
+            Native.SteamAPI_SteamNetworkingMessage_Release(ref this);
         }
 
         public uint GetSize()

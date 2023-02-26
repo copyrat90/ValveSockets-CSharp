@@ -53,12 +53,12 @@ namespace Valve.Sockets
         /// <para>If you really do wish to bind a particular interface, then set the local address to the</para>
         /// <para>appropriate IPv4 or IPv6 IP.</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
-        /// <para>When a client attempts to connect, a SteamNetConnectionStatusChangedCallback_t</para>
+        /// <para>When a client attempts to connect, a SteamNetConnectionStatusChangedCallback</para>
         /// <para>will be posted.  The connection will be in the connecting state.</para>
         /// </remarks>
-        uint CreateListenSocketIP(global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint CreateListenSocketIP(global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>Creates a connection and begins talking to a "server" over UDP at the</para>
@@ -66,12 +66,12 @@ namespace Valve.Sockets
         /// <para>matching call to CreateListenSocketIP on the specified port.</para>
         /// </summary>
         /// <remarks>
-        /// <para>A SteamNetConnectionStatusChangedCallback_t callback will be triggered when we start</para>
+        /// <para>A SteamNetConnectionStatusChangedCallback callback will be triggered when we start</para>
         /// <para>connecting, and then another one on either timeout or successful connection.</para>
         /// <para>If the server does not have any identity configured, then their network address</para>
         /// <para>will be the only identity in use.  Or, the network host may provide a platform-specific</para>
         /// <para>identity with or without a valid certificate to authenticate that identity.  (These</para>
-        /// <para>details will be contained in the SteamNetConnectionStatusChangedCallback_t.)  It's</para>
+        /// <para>details will be contained in the SteamNetConnectionStatusChangedCallback.)  It's</para>
         /// <para>up to your application to decide whether to allow the connection.</para>
         /// <para>By default, all connections will get basic encryption sufficient to prevent</para>
         /// <para>casual eavesdropping.  But note that without certificates (or a shared secret</para>
@@ -79,10 +79,10 @@ namespace Valve.Sockets
         /// <para>way of knowing who is actually on the other end, and thus are vulnerable to</para>
         /// <para>man-in-the-middle attacks.</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectByIPAddress(global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint ConnectByIPAddress(global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>Like CreateListenSocketIP, but clients will connect using ConnectP2P.</summary>
         /// <remarks>
@@ -102,10 +102,10 @@ namespace Valve.Sockets
         /// <para>tickets are used, then once a ticket is obtained, a client can connect to</para>
         /// <para>your server even if they got disconnected from Steam or Steam is offline.</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>Begin connecting to a peer that is identified using a platform-specific identifier.</para>
@@ -114,20 +114,20 @@ namespace Valve.Sockets
         /// </summary>
         /// <remarks>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// <para>To use your own signaling service, see:</para>
         /// <para>- ConnectP2PCustomSignaling</para>
         /// <para>- k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling</para>
         /// </remarks>
-        uint ConnectP2P(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint ConnectP2P(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>Accept an incoming connection that has been received on a listen socket.</summary>
         /// <remarks>
         /// <para>When a connection attempt is received (perhaps after a few basic handshake</para>
         /// <para>packets have been exchanged to prevent trivial spoofing), a connection interface</para>
         /// <para>object is created in the k_ESteamNetworkingConnectionState_Connecting state</para>
-        /// <para>and a SteamNetConnectionStatusChangedCallback_t is posted.  At this point, your</para>
+        /// <para>and a SteamNetConnectionStatusChangedCallback is posted.  At this point, your</para>
         /// <para>application MUST either accept or close the connection.  (It may not ignore it.)</para>
         /// <para>Accepting the connection will transition it either into the connected state,</para>
         /// <para>or the finding route state, depending on the connection type.</para>
@@ -191,9 +191,9 @@ namespace Valve.Sockets
         /// <summary>
         /// <para>Set connection user data.  the data is returned in the following places</para>
         /// <para>- You can query it using GetConnectionUserData.</para>
-        /// <para>- The SteamNetworkingmessage_t structure.</para>
-        /// <para>- The SteamNetConnectionInfo_t structure.</para>
-        /// <para>(Which is a member of SteamNetConnectionStatusChangedCallback_t -- but see WARNINGS below!!!!)</para>
+        /// <para>- The SteamNetworkingmessage structure.</para>
+        /// <para>- The SteamNetConnectionInfo structure.</para>
+        /// <para>(Which is a member of SteamNetConnectionStatusChangedCallback -- but see WARNINGS below!!!!)</para>
         /// </summary>
         /// <remarks>
         /// <para>Do you need to set this atomically when the connection is created?</para>
@@ -292,7 +292,7 @@ namespace Valve.Sockets
         /// <para>See ISteamNetworkingSockets::SendMessageToConnection for possible</para>
         /// <para>failure codes.</para>
         /// </remarks>
-        void SendMessages(int nMessages, global::Valve.Sockets.SteamNetworkingMessage_t[] pMessages, ref long pOutMessageNumberOrResult);
+        void SendMessages(int nMessages, global::Valve.Sockets.SteamNetworkingMessage[] pMessages, ref long pOutMessageNumberOrResult);
 
         /// <summary>
         /// <para>Flush any messages waiting on the Nagle timer and send them</para>
@@ -323,14 +323,14 @@ namespace Valve.Sockets
         /// <para>Unreliable messages may be dropped, or delivered out of order with respect to</para>
         /// <para>each other or with respect to reliable messages.  The same unreliable message</para>
         /// <para>may be received multiple times.</para>
-        /// <para>If any messages are returned, you MUST call SteamNetworkingMessage_t::Release() on each</para>
+        /// <para>If any messages are returned, you MUST call SteamNetworkingMessage::Release() on each</para>
         /// <para>of them free up resources after you are done.  It is safe to keep the object alive for</para>
         /// <para>a little while (put it into some queue, etc), and you may call Release() from any thread.</para>
         /// </remarks>
-        int ReceiveMessagesOnConnection(uint hConn, ref global::Valve.Sockets.SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnConnection(uint hConn, ref global::Valve.Sockets.SteamNetworkingMessage[] ppOutMessages, int nMaxMessages);
 
         /// <summary>Returns basic information about the high-level state of the connection.</summary>
-        bool GetConnectionInfo(uint hConn, global::Valve.Sockets.SteamNetConnectionInfo_t pInfo);
+        bool GetConnectionInfo(uint hConn, global::Valve.Sockets.SteamNetConnectionInfo pInfo);
 
         /// <summary>
         /// <para>Returns a small set of information about the real-time state of the connection</para>
@@ -348,7 +348,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultNoConnection - connection handle is invalid or connection has been closed.</para>
         /// <para>- k_EResultInvalidParam - nLanes is bad</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetConnectionRealTimeStatus(uint hConn, global::Valve.Sockets.SteamNetConnectionRealTimeStatus_t pStatus, int nLanes, global::Valve.Sockets.SteamNetConnectionRealTimeLaneStatus_t pLanes);
+        global::Valve.Sockets.EResult GetConnectionRealTimeStatus(uint hConn, global::Valve.Sockets.SteamNetConnectionRealTimeStatus pStatus, int nLanes, global::Valve.Sockets.SteamNetConnectionRealTimeLaneStatus pLanes);
 
         /// <summary>
         /// <para>Returns detailed connection stats in text format.  Useful</para>
@@ -456,7 +456,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultInvalidParam - Invalid number of lanes, bad weights, or you tried to reduce the number of lanes</para>
         /// <para>- k_EResultInvalidState - Connection is already dead, etc</para>
         /// <para>See also:</para>
-        /// <para>SteamNetworkingMessage_t::m_idxLane</para>
+        /// <para>SteamNetworkingMessage::m_idxLane</para>
         /// </remarks>
         global::Valve.Sockets.EResult ConfigureConnectionLanes(uint hConn, int nNumLanes, ref int pLanePriorities, ref ushort pLaneWeights);
 
@@ -488,7 +488,7 @@ namespace Valve.Sockets
         /// <para>In this respect, the behavior of the system after trying and failing is the same</para>
         /// <para>as before the first attempt: attempting authenticated communication or calling</para>
         /// <para>this function will call the system to attempt to acquire the necessary resources.</para>
-        /// <para>You can use GetAuthenticationStatus or listen for SteamNetAuthenticationStatus_t</para>
+        /// <para>You can use GetAuthenticationStatus or listen for SteamNetAuthenticationStatus</para>
         /// <para>to monitor the status.</para>
         /// <para>Returns the current value that would be returned from GetAuthenticationStatus.</para>
         /// </remarks>
@@ -496,15 +496,15 @@ namespace Valve.Sockets
 
         /// <summary>
         /// <para>Query our readiness to participate in authenticated communications.  A</para>
-        /// <para>SteamNetAuthenticationStatus_t callback is posted any time this status changes,</para>
+        /// <para>SteamNetAuthenticationStatus callback is posted any time this status changes,</para>
         /// <para>but you can use this function to query it at any time.</para>
         /// </summary>
         /// <remarks>
-        /// <para>The value of SteamNetAuthenticationStatus_t::m_eAvail is returned.  If you only</para>
+        /// <para>The value of SteamNetAuthenticationStatus::m_eAvail is returned.  If you only</para>
         /// <para>want this high level status, you can pass NULL for pDetails.  If you want further</para>
         /// <para>details, pass non-NULL to receive them.</para>
         /// </remarks>
-        global::Valve.Sockets.ESteamNetworkingAvailability GetAuthenticationStatus(global::Valve.Sockets.SteamNetAuthenticationStatus_t pDetails);
+        global::Valve.Sockets.ESteamNetworkingAvailability GetAuthenticationStatus(global::Valve.Sockets.SteamNetAuthenticationStatus pDetails);
 
         /// <summary>Create a new poll group.</summary>
         /// <remarks>You should destroy the poll group when you are done using DestroyPollGroup</remarks>
@@ -537,8 +537,8 @@ namespace Valve.Sockets
 
         /// <summary>
         /// <para>Same as ReceiveMessagesOnConnection, but will return the next messages available</para>
-        /// <para>on any connection in the poll group.  Examine SteamNetworkingMessage_t::m_conn</para>
-        /// <para>to know which connection.  (SteamNetworkingMessage_t::m_nConnUserData might also</para>
+        /// <para>on any connection in the poll group.  Examine SteamNetworkingMessage::m_conn</para>
+        /// <para>to know which connection.  (SteamNetworkingMessage::m_nConnUserData might also</para>
         /// <para>be useful.)</para>
         /// </summary>
         /// <remarks>
@@ -552,13 +552,13 @@ namespace Valve.Sockets
         /// <para>appear consecutively in the list; they may be interleaved with messages for</para>
         /// <para>other connections.)</para>
         /// </remarks>
-        int ReceiveMessagesOnPollGroup(uint hPollGroup, ref global::Valve.Sockets.SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnPollGroup(uint hPollGroup, ref global::Valve.Sockets.SteamNetworkingMessage[] ppOutMessages, int nMaxMessages);
 
         /// <summary>
         /// <para>Call this when you receive a ticket from your backend / matchmaking system.  Puts the</para>
         /// <para>ticket into a persistent cache, and optionally returns the parsed ticket.</para>
         /// </summary>
-        /// <remarks>See stamdatagram_ticketgen.h for more details.</remarks>
+        /// <remarks>See stamdatagramicketgen.h for more details.</remarks>
         bool ReceivedRelayAuthTicket(byte[] pvTicket, int cbTicket, global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         /// <summary>
@@ -586,10 +586,10 @@ namespace Valve.Sockets
         /// <para>If you use this, you probably want to call ISteamNetworkingUtils::InitRelayNetworkAccess()</para>
         /// <para>when your app initializes</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectToHostedDedicatedServer(global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint ConnectToHostedDedicatedServer(global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>Returns the value of the SDR_LISTEN_PORT environment variable.  This</para>
@@ -647,10 +647,10 @@ namespace Valve.Sockets
         /// <para>to issue your own tickets.  Clients connecting to the server on this virtual</para>
         /// <para>port will need a ticket, and they must connect using ConnectToHostedDedicatedServer.</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>Generate an authentication blob that can be used to securely login with</para>
@@ -711,10 +711,10 @@ namespace Valve.Sockets
         /// <para>If you use this, you probably want to call ISteamNetworkingUtils::InitRelayNetworkAccess()</para>
         /// <para>when your app initializes</para>
         /// <para>If you need to set any initial config options, pass them here.  See</para>
-        /// <para>SteamNetworkingConfigValue_t for more about why this is preferable to</para>
+        /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectP2PCustomSignaling(global::Valve.Sockets.ISteamNetworkingConnectionSignaling pSignaling, global::Valve.Sockets.SteamNetworkingIdentity pPeerIdentity, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint ConnectP2PCustomSignaling(global::Valve.Sockets.ISteamNetworkingConnectionSignaling pSignaling, global::Valve.Sockets.SteamNetworkingIdentity pPeerIdentity, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>Called when custom signaling has received a message.  When your</para>
@@ -799,7 +799,7 @@ namespace Valve.Sockets
         /// <para>or relationship!  Do *not* assume they are contiguous, even though that</para>
         /// <para>may often occur in practice.</para>
         /// <para>Returns false if a request was already in progress, true if a new request</para>
-        /// <para>was started.  A SteamNetworkingFakeIPResult_t will be posted when the request</para>
+        /// <para>was started.  A SteamNetworkingFakeIPResult will be posted when the request</para>
         /// <para>completes.</para>
         /// <para>For gameservers, you *must* call this after initializing the SDK but before</para>
         /// <para>beginning login.  Steam needs to know in advance that FakeIP will be used.</para>
@@ -807,7 +807,7 @@ namespace Valve.Sockets
         /// <para>replaced by the FakeIP, and the fake port at index 0.  The request is actually queued</para>
         /// <para>until the logon completes, so you must not wait until the allocation completes</para>
         /// <para>before logging in.  Except for trivial failures that can be detected locally</para>
-        /// <para>(e.g. invalid parameter), a SteamNetworkingFakeIPResult_t callback (whether success or</para>
+        /// <para>(e.g. invalid parameter), a SteamNetworkingFakeIPResult callback (whether success or</para>
         /// <para>failure) will not be posted until after we have logged in.  Furthermore, it is assumed</para>
         /// <para>that FakeIP allocation is essential for your application to function, and so failure</para>
         /// <para>will not be reported until *several* retries have been attempted.  This process may</para>
@@ -816,9 +816,9 @@ namespace Valve.Sockets
         /// <para>- Server creates a listen socket using CreateListenSocketP2PFakeIP</para>
         /// <para>- Client connects using ConnectByIPAddress, passing in the FakeIP address.</para>
         /// <para>- The connection will behave mostly like a P2P connection.  The identities</para>
-        /// <para>that appear in SteamNetConnectionInfo_t will be the FakeIP identity until</para>
+        /// <para>that appear in SteamNetConnectionInfo will be the FakeIP identity until</para>
         /// <para>we know the real identity.  Then it will be the real identity.  If the</para>
-        /// <para>SteamNetConnectionInfo_t::m_addrRemote is valid, it will be a real IPv4</para>
+        /// <para>SteamNetConnectionInfo::m_addrRemote is valid, it will be a real IPv4</para>
         /// <para>address of a NAT-punched connection.  Otherwise, it will not be valid.</para>
         /// <para>To communicate using an ad-hoc sendto/recv from (UDP-style) API,</para>
         /// <para>use CreateFakeUDPPort.</para>
@@ -828,7 +828,7 @@ namespace Valve.Sockets
         /// <summary>
         /// <para>Return info about the FakeIP and port(s) that we have been assigned,</para>
         /// <para>if any.  idxFirstPort is currently reserved and must be zero.</para>
-        /// <para>Make sure and check SteamNetworkingFakeIPResult_t::m_eResult</para>
+        /// <para>Make sure and check SteamNetworkingFakeIPResult::m_eResult</para>
         /// </summary>
         void GetFakeIP();
 
@@ -844,7 +844,7 @@ namespace Valve.Sockets
         /// <para>BeginAsyncRequestFakeIP.  However, you do not need to wait for the</para>
         /// <para>request to complete before creating the listen socket.</para>
         /// </remarks>
-        uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue_t pOptions);
+        uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
 
         /// <summary>
         /// <para>If the connection was initiated using the "FakeIP" system, then we</para>

@@ -7,7 +7,7 @@ namespace Valve.Sockets
 {
     public partial struct CSteamID
     {
-        private SteamID_t m_steamid;
+        private SteamID m_steamid;
 
         public CSteamID()
         {
@@ -253,16 +253,16 @@ namespace Valve.Sockets
         }
 
         [StructLayout(LayoutKind.Explicit, Pack = 1)]
-        private partial struct SteamID_t
+        private partial struct SteamID
         {
             [FieldOffset(0)]
-            public SteamIDComponent_t m_comp;
+            public SteamIDComponent m_comp;
 
             [FieldOffset(0)]
             public ulong m_unAll64Bits;
 
             [StructLayout(LayoutKind.Sequential, Pack = 1)]
-            public partial struct SteamIDComponent_t
+            public partial struct SteamIDComponent
             {
                 public uint _bitfield1;
                 public uint m_unAccountID

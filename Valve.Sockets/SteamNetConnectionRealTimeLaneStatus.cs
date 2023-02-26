@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Valve.Sockets
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public unsafe partial struct SteamNetConnectionRealTimeLaneStatus_t
+    public unsafe partial struct SteamNetConnectionRealTimeLaneStatus
     {
         public int m_cbPendingUnreliable;
 

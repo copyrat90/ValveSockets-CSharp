@@ -1,6 +1,6 @@
 namespace Valve.Sockets
 {
-    public unsafe partial struct SteamRelayNetworkStatus_t
+    public unsafe partial struct SteamRelayNetworkStatus
     {
         public ESteamNetworkingAvailability m_eAvail;
 

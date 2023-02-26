@@ -45,7 +45,7 @@ namespace Valve.Sockets
         /// <para>Sends a message to the specified host.  If we don't already have a session with that user,</para>
         /// <para>a session is implicitly created.  There might be some handshaking that needs to happen</para>
         /// <para>before we can actually begin sending message data.  If this handshaking fails and we can't</para>
-        /// <para>get through, an error will be posted via the callback SteamNetworkingMessagesSessionFailed_t.</para>
+        /// <para>get through, an error will be posted via the callback SteamNetworkingMessagesSessionFailed.</para>
         /// <para>There is no notification when the operation succeeds.  (You should have the peer send a reply</para>
         /// <para>for this purpose.)</para>
         /// </summary>
@@ -87,14 +87,14 @@ namespace Valve.Sockets
         /// <para>Reads the next message that has been sent from another user via SendMessageToUser() on the given channel.</para>
         /// <para>Returns number of messages returned into your list.  (0 if no message are available on that channel.)</para>
         /// </summary>
-        /// <remarks>When you're done with the message object(s), make sure and call SteamNetworkingMessage_t::Release()!</remarks>
-        int ReceiveMessagesOnChannel(int nLocalChannel, global::Valve.Sockets.SteamNetworkingMessage_t ppOutMessages, int nMaxMessages);
+        /// <remarks>When you're done with the message object(s), make sure and call SteamNetworkingMessage::Release()!</remarks>
+        int ReceiveMessagesOnChannel(int nLocalChannel, global::Valve.Sockets.SteamNetworkingMessage ppOutMessages, int nMaxMessages);
 
         /// <summary>
-        /// <para>Call this in response to a SteamNetworkingMessagesSessionRequest_t callback.</para>
-        /// <para>SteamNetworkingMessagesSessionRequest_t are posted when a user tries to send you a message,</para>
+        /// <para>Call this in response to a SteamNetworkingMessagesSessionRequest callback.</para>
+        /// <para>SteamNetworkingMessagesSessionRequest are posted when a user tries to send you a message,</para>
         /// <para>and you haven't tried to talk to them first.  If you don't want to talk to them, just ignore</para>
-        /// <para>the request.  If the user continues to send you messages, SteamNetworkingMessagesSessionRequest_t</para>
+        /// <para>the request.  If the user continues to send you messages, SteamNetworkingMessagesSessionRequest</para>
         /// <para>callbacks will continue to be posted periodically.</para>
         /// </summary>
         /// <remarks>
@@ -106,7 +106,7 @@ namespace Valve.Sockets
 
         /// <summary>
         /// <para>Call this when you're done talking to a user to immediately free up resources under-the-hood.</para>
-        /// <para>If the remote user tries to send data to you again, another SteamNetworkingMessagesSessionRequest_t</para>
+        /// <para>If the remote user tries to send data to you again, another SteamNetworkingMessagesSessionRequest</para>
         /// <para>callback will be posted.</para>
         /// </summary>
         /// <remarks>Note that sessions that go unused for a few minutes are automatically timed out.</remarks>
@@ -116,7 +116,7 @@ namespace Valve.Sockets
         /// <para>Call this  when you're done talking to a user on a specific channel.  Once all</para>
         /// <para>open channels to a user have been closed, the open session to the user will be</para>
         /// <para>closed, and any new data from this user will trigger a</para>
-        /// <para>SteamSteamNetworkingMessagesSessionRequest_t callback</para>
+        /// <para>SteamSteamNetworkingMessagesSessionRequest callback</para>
         /// </summary>
         bool CloseChannelWithUser(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nLocalChannel);
 
@@ -126,12 +126,12 @@ namespace Valve.Sockets
         /// <para>failure information.  (See SendMessageToUser and k_nSteamNetworkingSend_AutoRestartBrokenSession.)</para>
         /// </summary>
         /// <remarks>
-        /// <para>Returns the value of SteamNetConnectionInfo_t::m_eState, or k_ESteamNetworkingConnectionState_None</para>
+        /// <para>Returns the value of SteamNetConnectionInfo::m_eState, or k_ESteamNetworkingConnectionState_None</para>
         /// <para>if no connection exists with specified peer.  You may pass nullptr for either parameter if</para>
         /// <para>you do not need the corresponding details.  Note that sessions time out after a while,</para>
         /// <para>so if a connection fails, or SendMessageToUser returns k_EResultNoConnection, you cannot wait</para>
         /// <para>indefinitely to obtain the reason for failure.</para>
         /// </remarks>
-        global::Valve.Sockets.ESteamNetworkingConnectionState GetSessionConnectionInfo(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, global::Valve.Sockets.SteamNetConnectionInfo_t pConnectionInfo, global::Valve.Sockets.SteamNetConnectionRealTimeStatus_t pQuickStatus);
+        global::Valve.Sockets.ESteamNetworkingConnectionState GetSessionConnectionInfo(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, global::Valve.Sockets.SteamNetConnectionInfo pConnectionInfo, global::Valve.Sockets.SteamNetConnectionRealTimeStatus pQuickStatus);
     }
 }

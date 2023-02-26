@@ -18,7 +18,7 @@ namespace Valve.Sockets
             }
         }
 
-        public ref GameID_t m_gameID
+        public ref GameID m_gameID
         {
             get
             {
@@ -159,7 +159,7 @@ namespace Valve.Sockets
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public partial struct GameID_t
+        public partial struct GameID
         {
             public uint _bitfield1;
             public uint m_nAppID
@@ -209,7 +209,7 @@ namespace Valve.Sockets
             public ulong m_ulGameID;
 
             [FieldOffset(0)]
-            public GameID_t m_gameID;
+            public GameID m_gameID;
         }
     }
 }

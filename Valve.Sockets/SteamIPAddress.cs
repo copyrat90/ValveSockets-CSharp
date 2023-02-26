@@ -4,7 +4,7 @@ using static Valve.Sockets.ESteamIPType;
 namespace Valve.Sockets
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public unsafe partial struct SteamIPAddress_t
+    public unsafe partial struct SteamIPAddress
     {
         public _Anonymous_e__Union Anonymous;
 
@@ -55,18 +55,18 @@ namespace Valve.Sockets
             }
         }
 
-        public static SteamIPAddress_t IPv4Any()
+        public static SteamIPAddress IPv4Any()
         {
-            SteamIPAddress_t ipOut = new SteamIPAddress_t();
+            SteamIPAddress ipOut = new SteamIPAddress();
 
             ipOut.m_eType = k_ESteamIPTypeIPv4;
             ipOut.Anonymous.m_unIPv4 = 0;
             return ipOut;
         }
 
-        public static SteamIPAddress_t IPv6Any()
+        public static SteamIPAddress IPv6Any()
         {
-            SteamIPAddress_t ipOut = new SteamIPAddress_t();
+            SteamIPAddress ipOut = new SteamIPAddress();
 
             ipOut.m_eType = k_ESteamIPTypeIPv6;
             ipOut.Anonymous.m_ipv6Qword[0] = 0;
@@ -74,18 +74,18 @@ namespace Valve.Sockets
             return ipOut;
         }
 
-        public static SteamIPAddress_t IPv4Loopback()
+        public static SteamIPAddress IPv4Loopback()
         {
-            SteamIPAddress_t ipOut = new SteamIPAddress_t();
+            SteamIPAddress ipOut = new SteamIPAddress();
 
             ipOut.m_eType = k_ESteamIPTypeIPv4;
             ipOut.Anonymous.m_unIPv4 = 0x7f000001;
             return ipOut;
         }
 
-        public static SteamIPAddress_t IPv6Loopback()
+        public static SteamIPAddress IPv6Loopback()
         {
-            SteamIPAddress_t ipOut = new SteamIPAddress_t();
+            SteamIPAddress ipOut = new SteamIPAddress();
 
             ipOut.m_eType = k_ESteamIPTypeIPv6;
             ipOut.Anonymous.m_ipv6Qword[0] = 0;

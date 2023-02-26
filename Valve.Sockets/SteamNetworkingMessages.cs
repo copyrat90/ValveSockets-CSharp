@@ -21,7 +21,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public int ReceiveMessagesOnChannel(int nLocalChannel, SteamNetworkingMessage_t ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnChannel(int nLocalChannel, SteamNetworkingMessage ppOutMessages, int nMaxMessages)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +42,7 @@ namespace Valve.Sockets
         }
 
         public ESteamNetworkingConnectionState GetSessionConnectionInfo(SteamNetworkingIdentity identityRemote,
-            SteamNetConnectionInfo_t pConnectionInfo, SteamNetConnectionRealTimeStatus_t pQuickStatus)
+            SteamNetConnectionInfo pConnectionInfo, SteamNetConnectionRealTimeStatus pQuickStatus)
         {
             throw new NotImplementedException();
         }

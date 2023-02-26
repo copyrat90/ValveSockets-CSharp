@@ -1,6 +1,6 @@
 namespace Valve.Sockets
 {
-    public enum EPlayerResult_t : uint
+    public enum EPlayerResult : uint
     {
         k_EPlayerResultFailedToConnect = 1,
         k_EPlayerResultAbandoned = 2,

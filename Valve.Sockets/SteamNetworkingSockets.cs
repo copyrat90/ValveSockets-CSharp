@@ -21,24 +21,24 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public uint CreateListenSocketIP(SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue_t pOptions)
+        public uint CreateListenSocketIP(SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(_instance, localAddress, nOptions, pOptions);
         }
 
-        public uint ConnectByIPAddress(SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue_t pOptions)
+        public uint ConnectByIPAddress(SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(_instance, address, nOptions, pOptions);
         }
 
-        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue_t pOptions)
+        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
         }
 
         public uint ConnectP2P(SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue_t pOptions)
+            SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2P(_instance, identityRemote, nRemoteVirtualPort,
                 nOptions, pOptions);
@@ -85,7 +85,7 @@ namespace Valve.Sockets
                 nSendFlags, ref pOutMessageNumber);
         }
 
-        public void SendMessages(int nMessages, SteamNetworkingMessage_t[] pMessages, ref long pOutMessageNumberOrResult)
+        public void SendMessages(int nMessages, SteamNetworkingMessage[] pMessages, ref long pOutMessageNumberOrResult)
         {
             Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, ref pMessages, ref pOutMessageNumberOrResult);
         }
@@ -95,19 +95,19 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_FlushMessagesOnConnection(_instance, hConn);
         }
 
-        public int ReceiveMessagesOnConnection(uint hConn, ref SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnConnection(uint hConn, ref SteamNetworkingMessage[] ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection(_instance, hConn,
                 ref ppOutMessages, nMaxMessages);
         }
 
-        public bool GetConnectionInfo(uint hConn, SteamNetConnectionInfo_t pInfo)
+        public bool GetConnectionInfo(uint hConn, SteamNetConnectionInfo pInfo)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionInfo(_instance, hConn, ref pInfo);
         }
 
-        public EResult GetConnectionRealTimeStatus(uint hConn, SteamNetConnectionRealTimeStatus_t pStatus, int nLanes,
-            SteamNetConnectionRealTimeLaneStatus_t pLanes)
+        public EResult GetConnectionRealTimeStatus(uint hConn, SteamNetConnectionRealTimeStatus pStatus, int nLanes,
+            SteamNetConnectionRealTimeLaneStatus pLanes)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus(_instance, hConn, ref pStatus,
                 nLanes, ref pLanes);
@@ -146,7 +146,7 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_InitAuthentication(_instance);
         }
 
-        public ESteamNetworkingAvailability GetAuthenticationStatus(SteamNetAuthenticationStatus_t pDetails)
+        public ESteamNetworkingAvailability GetAuthenticationStatus(SteamNetAuthenticationStatus pDetails)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetAuthenticationStatus(_instance, ref pDetails);
         }
@@ -166,7 +166,7 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_SetConnectionPollGroup(_instance, hConn, hPollGroup);
         }
 
-        public int ReceiveMessagesOnPollGroup(uint hPollGroup, ref SteamNetworkingMessage_t[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnPollGroup(uint hPollGroup, ref SteamNetworkingMessage[] ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(_instance, hPollGroup,
                 ref ppOutMessages, nMaxMessages);
@@ -186,7 +186,7 @@ namespace Valve.Sockets
         }
 
         public uint ConnectToHostedDedicatedServer(SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue_t pOptions)
+            SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(_instance, identityTarget,
                 nRemoteVirtualPort, nOptions, pOptions);
@@ -208,7 +208,7 @@ namespace Valve.Sockets
         }
 
         public uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions,
-            SteamNetworkingConfigValue_t pOptions)
+            SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
@@ -222,7 +222,7 @@ namespace Valve.Sockets
         }
 
         public uint ConnectP2PCustomSignaling(ISteamNetworkingConnectionSignaling pSignaling, SteamNetworkingIdentity pPeerIdentity,
-            int nRemoteVirtualPort, int nOptions, SteamNetworkingConfigValue_t pOptions)
+            int nRemoteVirtualPort, int nOptions, SteamNetworkingConfigValue pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling(_instance, ref pSignaling,
                 pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
@@ -267,7 +267,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, SteamNetworkingConfigValue_t pOptions)
+        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, SteamNetworkingConfigValue pOptions)
         {
             throw new NotImplementedException();
         }

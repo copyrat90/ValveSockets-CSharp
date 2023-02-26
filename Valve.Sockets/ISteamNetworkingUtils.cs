@@ -35,7 +35,7 @@ namespace Valve.Sockets
         /// <para>m_cbSize will be zero, and m_pfnFreeData will be NULL.  You will need to</para>
         /// <para>set each of these.</para>
         /// </remarks>
-        global::Valve.Sockets.SteamNetworkingMessage_t AllocateMessage(int cbAllocateBuffer);
+        global::Valve.Sockets.SteamNetworkingMessage AllocateMessage(int cbAllocateBuffer);
 
         /// <summary>
         /// <para>If you know that you are going to be using the relay network (for example,</para>
@@ -50,7 +50,7 @@ namespace Valve.Sockets
         /// <para>trigger a retry, and so calling this function is never strictly necessary,</para>
         /// <para>but it can be useful to call it a program launch time, if access to the</para>
         /// <para>relay network is anticipated.</para>
-        /// <para>Use GetRelayNetworkStatus or listen for SteamRelayNetworkStatus_t</para>
+        /// <para>Use GetRelayNetworkStatus or listen for SteamRelayNetworkStatus</para>
         /// <para>callbacks to know when initialization has completed.</para>
         /// <para>Typically initialization completes in a few seconds.</para>
         /// <para>Note: dedicated servers hosted in known data centers do *not* need</para>
@@ -62,13 +62,13 @@ namespace Valve.Sockets
 
         /// <summary>Fetch current status of the relay network.</summary>
         /// <remarks>
-        /// <para>SteamRelayNetworkStatus_t is also a callback.  It will be triggered on</para>
+        /// <para>SteamRelayNetworkStatus is also a callback.  It will be triggered on</para>
         /// <para>both the user and gameserver interfaces any time the status changes, or</para>
         /// <para>ping measurement starts or stops.</para>
-        /// <para>SteamRelayNetworkStatus_t::m_eAvail is returned.  If you want</para>
+        /// <para>SteamRelayNetworkStatus::m_eAvail is returned.  If you want</para>
         /// <para>more details, you can pass a non-NULL value.</para>
         /// </remarks>
-        global::Valve.Sockets.ESteamNetworkingAvailability GetRelayNetworkStatus(global::Valve.Sockets.SteamRelayNetworkStatus_t pDetails);
+        global::Valve.Sockets.ESteamNetworkingAvailability GetRelayNetworkStatus(global::Valve.Sockets.SteamRelayNetworkStatus pDetails);
 
         /// <summary>
         /// <para>Return location info for the current host.  Returns the approximate</para>
@@ -81,7 +81,7 @@ namespace Valve.Sockets
         /// <para>This always return the most up-to-date information we have available</para>
         /// <para>right now, even if we are in the middle of re-calculating ping times.</para>
         /// </remarks>
-        float GetLocalPingLocation(global::Valve.Sockets.SteamNetworkPingLocation_t result);
+        float GetLocalPingLocation(global::Valve.Sockets.SteamNetworkPingLocation result);
 
         /// <summary>
         /// <para>Estimate the round-trip latency between two arbitrary locations, in</para>
@@ -105,7 +105,7 @@ namespace Valve.Sockets
         /// <para>Do you need to be able to do this from a backend/matchmaking server?</para>
         /// <para>You are looking for the "game coordinator" library.</para>
         /// </remarks>
-        int EstimatePingTimeBetweenTwoLocations(global::Valve.Sockets.SteamNetworkPingLocation_t location1, global::Valve.Sockets.SteamNetworkPingLocation_t location2);
+        int EstimatePingTimeBetweenTwoLocations(global::Valve.Sockets.SteamNetworkPingLocation location1, global::Valve.Sockets.SteamNetworkPingLocation location2);
 
         /// <summary>
         /// <para>Same as EstimatePingTime, but assumes that one location is the local host.</para>
@@ -118,7 +118,7 @@ namespace Valve.Sockets
         /// <para>this function uses a slightly more complete set of information about what</para>
         /// <para>route would be taken.</para>
         /// </remarks>
-        int EstimatePingTimeFromLocalHost(global::Valve.Sockets.SteamNetworkPingLocation_t remoteLocation);
+        int EstimatePingTimeFromLocalHost(global::Valve.Sockets.SteamNetworkPingLocation remoteLocation);
 
         /// <summary>
         /// <para>Convert a ping location into a text format suitable for sending over the wire.</para>
@@ -126,13 +126,13 @@ namespace Valve.Sockets
         /// <para>so please do not parse it yourself.  Your buffer must be at least</para>
         /// <para>k_cchMaxSteamNetworkingPingLocationString bytes.</para>
         /// </summary>
-        void ConvertPingLocationToString(global::Valve.Sockets.SteamNetworkPingLocation_t location, string pszBuf, int cchBufSize);
+        void ConvertPingLocationToString(global::Valve.Sockets.SteamNetworkPingLocation location, string pszBuf, int cchBufSize);
 
         /// <summary>
-        /// <para>Parse back SteamNetworkPingLocation_t string.  Returns false if we couldn't understand</para>
+        /// <para>Parse back SteamNetworkPingLocation string.  Returns false if we couldn't understand</para>
         /// <para>the string.</para>
         /// </summary>
-        bool ParsePingLocationString(string pszString, global::Valve.Sockets.SteamNetworkPingLocation_t result);
+        bool ParsePingLocationString(string pszString, global::Valve.Sockets.SteamNetworkPingLocation result);
 
         /// <summary>
         /// <para>Check if the ping data of sufficient recency is available, and if</para>
@@ -149,7 +149,7 @@ namespace Valve.Sockets
         /// <para>Returns false if sufficiently recent data is not available.  In this</para>
         /// <para>case, ping measurement is initiated, if it is not already active.</para>
         /// <para>(You cannot restart a measurement already in progress.)</para>
-        /// <para>You can use GetRelayNetworkStatus or listen for SteamRelayNetworkStatus_t</para>
+        /// <para>You can use GetRelayNetworkStatus or listen for SteamRelayNetworkStatus</para>
         /// <para>to know when ping measurement completes.</para>
         /// </remarks>
         bool CheckPingDataUpToDate(float flMaxAgeSeconds);
@@ -255,7 +255,7 @@ namespace Valve.Sockets
         /// <summary>
         /// <para>Set a configuration value, using a struct to pass the value.</para>
         /// <para>(This is just a convenience shortcut; see below for the implementation and</para>
-        /// <para>a little insight into how SteamNetworkingConfigValue_t is used when</para>
+        /// <para>a little insight into how SteamNetworkingConfigValue is used when</para>
         /// <para>setting config options during listen socket and connection creation.)</para>
         /// </summary>
         bool SetConfigValueStruct();

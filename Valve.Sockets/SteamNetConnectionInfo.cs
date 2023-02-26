@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Valve.Sockets
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public unsafe partial struct SteamNetConnectionInfo_t
+    public unsafe partial struct SteamNetConnectionInfo
     {
         public SteamNetworkingIdentity m_identityRemote;
         public long m_nUserData;

@@ -4,7 +4,7 @@ using static Valve.Sockets.ESteamNetworkingConfigDataType;
 
 namespace Valve.Sockets
 {
-    public unsafe partial struct SteamNetworkingConfigValue_t
+    public unsafe partial struct SteamNetworkingConfigValue
     {
         public ESteamNetworkingConfigValue m_eValue;
 
