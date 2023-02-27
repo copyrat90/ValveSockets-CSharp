@@ -13,7 +13,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <ArrayNamespace>Valve.Sockets.ArrayStructs</ArrayNamespace>
         <ArrayOutputPath>ArrayStructs</ArrayOutputPath>
@@ -22,9 +22,9 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Ryujinx.CustomTasks" Version="1.0.6" PrivateAssets="all" />
+        <PackageReference Include="Ryujinx.CustomTasks" Version="1.0.9" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>
