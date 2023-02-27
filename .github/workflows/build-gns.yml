@@ -1,0 +1,86 @@
+name: Build GameNetworkingSockets
+
+on:
+  workflow_call:
+
+env:
+  GNS_REPO: ValveSoftware/GameNetworkingSockets
+  CMAKE_OPTIONS: "-DUSE_STEAMWEBRTC=ON"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: ${{ env.GNS_REPO }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt install libssl-dev -y
+          sudo apt install libprotobuf-dev protobuf-compiler -y
+          sudo apt install ninja-build -y
+
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja ${{ env.CMAKE_OPTIONS }}
+          cd build
+          ninja
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: GNS-Linux
+          path: build/bin/*
+          retention-days: 1
+
+# TODO: Figure out why webrtc fails to build
+
+#  windows:
+#    runs-on: windows-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          repository: ${{ env.GNS_REPO }}
+#
+#      - name: Build
+#        run: |
+#          cmake -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -S . -B build -G Ninja ${{ env.CMAKE_OPTIONS }}
+#          cd build
+#          ninja
+#
+#      - name: Upload
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: GNS-Windows
+#          path: build/bin/*
+#          retention-days: 1
+
+# TODO: Figure out why "endian.h" is missing on macos
+
+#  macos:
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          repository: ${{ env.GNS_REPO }}
+#
+#      - name: Install dependencies
+#        run: |
+#          brew install openssl
+#          brew install protobuf
+#          brew install ninja
+#
+#      - name: Build
+#        run: |
+#          export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
+#          cmake -S . -B build -G Ninja ${{ env.CMAKE_OPTIONS }}
+#          cd build
+#          ninja
+#
+#      - name: Upload
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: GNS-MacOS
+#          path: build/bin/*
+#          retention-days: 1

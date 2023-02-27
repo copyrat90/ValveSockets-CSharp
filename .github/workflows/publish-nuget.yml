@@ -23,7 +23,12 @@ on:
 concurrency: publish
 
 jobs:
+  build_library:
+    uses: ./.github/workflows/build-gns.yml
+    secrets: inherit
+
   publish:
+    needs: build_library
     runs-on: ubuntu-latest
 
     steps:
@@ -51,6 +56,18 @@ jobs:
           [[ "${{ inputs.add_sha_postfix }}" == "true" ]] \
           && echo "build_version=${{ inputs.publish_version }}-${{ steps.git_short_sha.outputs.result }}" >> $GITHUB_OUTPUT \
           || echo "build_version=${{ inputs.publish_version }}" >> $GITHUB_OUTPUT
+
+      - name: Download artifacts
+        id: download
+        uses: actions/download-artifact@v3
+
+      - name: Add native libraries to project
+        run: |
+          mkdir -p runtimes/linux-x64/native runtimes/win-x64/native runtimes/osx-x64/native
+          mv "${{steps.download.outputs.download-path}}/GNS-Linux/libGameNetworkingSockets.so" ./runtimes/linux-x64/native/
+          # mv "${{steps.download.outputs.download-path}}/GNS-Windows/GameNetworkingSockets.dll" ./runtimes/win-x64/native/
+          # mv "${{steps.download.outputs.download-path}}/GNS-MacOS/libGameNetworkingSockets.dylib" ./runtimes/osx-x64/native/
+        working-directory: Valve.Sockets
 
       - name: Package project
         run: |
