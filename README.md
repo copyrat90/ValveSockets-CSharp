@@ -1,4 +1,4 @@
-# ValveSockets-CSharp
+# Valve.Sockets.AutoGen
 
 This repository provides (mostly) auto-generated C# bindings for [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) which is a library created and maintained by [Valve Software](https://www.valvesoftware.com).
 
