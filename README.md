@@ -30,7 +30,7 @@ NetworkingSockets server = new NetworkingSockets();
 
 uint pollGroup = server.CreatePollGroup();
 
-StatusCallback status = (ref StatusInfo info) => {
+ConnectionStatusChangedCallback connChanged = (ref ConnectionStatusChangedInfo info) => {
 	switch (info.connectionInfo.state) {
 		case ConnectionState.None:
 			break;
@@ -52,13 +52,14 @@ StatusCallback status = (ref StatusInfo info) => {
 	}
 };
 
-utils.SetStatusCallback(status);
+Configuration configs = new Configuration[1];
+configs[0].SetConnectionStatusChangedCallback(connChanged);
 
 Address address = new Address();
 
 address.SetAddress("::0", port);
 
-uint listenSocket = server.CreateListenSocket(ref address);
+uint listenSocket = server.CreateListenSocket(ref address, configs);
 
 #if VALVESOCKETS_SPAN
 	MessageCallback message = (in NetworkingMessage netMessage) => {
@@ -101,7 +102,7 @@ NetworkingSockets client = new NetworkingSockets();
 
 uint connection = 0;
 
-StatusCallback status = (ref StatusInfo info) => {
+ConnectionStatusChangedCallback connChanged = (ref ConnectionStatusChangedInfo info) => {
 	switch (info.connectionInfo.state) {
 		case ConnectionState.None:
 			break;
@@ -118,13 +119,14 @@ StatusCallback status = (ref StatusInfo info) => {
 	}
 };
 
-utils.SetStatusCallback(status);
+Configuration configs = new Configuration[1];
+configs[0].SetConnectionStatusChangedCallback(connChanged);
 
 Address address = new Address();
 
 address.SetAddress("::1", port);
 
-connection = client.Connect(ref address);
+connection = client.Connect(ref address, configs);
 
 #if VALVESOCKETS_SPAN
 	MessageCallback message = (in NetworkingMessage netMessage) => {
@@ -399,7 +401,7 @@ Definitions of operation result:
 #### Socket callbacks
 Provides per socket events.
 
-`StatusCallback(ref StatusInfo info)` notifies when dispatch mechanism on the listen socket returns a connection state. A reference to the delegate should be preserved from being garbage collected.
+`ConnectionStatusChangedCallback(ref ConnectionStatusChangedInfo info)` notifies when dispatch mechanism on the listen socket returns a connection state. A reference to the delegate should be preserved from being garbage collected.
 
 #### Library callbacks
 Provides per application events.
@@ -433,12 +435,12 @@ Contains marshalled data with configuration.
 
 `Configuration.data` a union of configuration data.
 
-#### StatusInfo
+#### ConnectionStatusChangedInfo
 Contains marshalled data with connection state.
 
-`StatusInfo.connection` connection ID.
+`ConnectionStatusChangedInfo.connection` connection ID.
 
-`StatusInfo.connectionInfo` essentially `ConnectionInfo` structure with marshalled data.
+`ConnectionStatusChangedInfo.connectionInfo` essentially `ConnectionInfo` structure with marshalled data.
 
 #### ConnectionInfo
 Contains marshalled data with connection info.
@@ -530,7 +532,7 @@ Contains a managed pointer to the sockets.
 
 `NetworkingSockets.Connect(ref Address address, Configuration[] configurations)` initiates a connection to a foreign host with optional configurations. Returns a local connection ID.
 
-`NetworkingSockets.AcceptConnection(Connection connection)` accepts an incoming connection that has received on a listen socket. When a connection attempt is received (perhaps after a few basic handshake packets have been exchanged to prevent trivial spoofing), a connection interface object is created in the `ConnectionState.Connecting` state and a `StatusCallback()` is called. Returns a result described in the `Result` enumeration.
+`NetworkingSockets.AcceptConnection(Connection connection)` accepts an incoming connection that has received on a listen socket. When a connection attempt is received (perhaps after a few basic handshake packets have been exchanged to prevent trivial spoofing), a connection interface object is created in the `ConnectionState.Connecting` state and a `ConnectionStatusChangedCallback()` is called. Returns a result described in the `Result` enumeration.
 
 `NetworkingSockets.CloseConnection(Connection connection, int reason, string debug, bool enableLinger)` disconnects from the host and invalidates the connection handle. Any unread data on the connection is discarded. The reason parameter is an optional user-supplied code that will be received on the other end and recorded (when possible) in backend analytics. Debug logging might indicate an error if the reason code out of acceptable range. The debug parameter is an optional human-readable diagnostic string that will be received on the other end and recorded (when possible) in backend analytics. If the user wishes to put the socket into a lingering state, where an attempt is made to flush any remaining sent data, the linger parameter should be enabled, otherwise reliable data is not flushed. If the connection has already ended, the reason code, debug string and linger parameter is ignored. Returns true on success or false on failure.
 
@@ -580,7 +582,7 @@ Contains a managed pointer to the sockets.
 
 `NetworkingUtils.FirstConfigurationValue` gets the lowest numbered configuration value available in the current environment.
 
-`NetworkingUtils.SetStatusCallback(StatusCallback callback)` sets a callback for connection status updates. Returns true on success or false on failure. 
+`NetworkingUtils.SetConnectionStatusChangedCallback(ConnectionStatusChangedCallback callback)` sets a callback for connection status updates. Returns true on success or false on failure. 
 
 `NetworkingUtils.SetDebugCallback(DebugType detailLevel, DebugCallback callback)` sets a callback for debug output.
 

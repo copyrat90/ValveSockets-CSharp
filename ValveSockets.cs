@@ -308,6 +308,30 @@ namespace Valve.Sockets {
 			[FieldOffset(0)]
 			public IntPtr FunctionPtr;
 		}
+
+		public void SetInt32(ConfigurationValue configValue, int data) {
+			value = configValue;
+			dataType = ConfigurationDataType.Int32;
+			this.data.Int32 = data;
+		}
+
+		public void SetInt64(ConfigurationValue configValue, long data) {
+			value = configValue;
+			dataType = ConfigurationDataType.Int64;
+			this.data.Int64 = data;
+		}
+
+		public void SetFloat(ConfigurationValue configValue, float data) {
+			value = configValue;
+			dataType = ConfigurationDataType.Float;
+			this.data.Float = data;
+		}
+
+		public void SetConnectionStatusChangedCallback(ConnectionStatusChangedCallback callback) {
+			value = ConfigurationValue.ConnectionStatusChanged;
+			dataType = ConfigurationDataType.FunctionPtr;
+			this.data.FunctionPtr = Marshal.GetFunctionPointerForDelegate(callback);
+		}
 	}
 
 	static class StructConst
@@ -322,7 +346,7 @@ namespace Valve.Sockets {
 	}
 	
 	[StructLayout(LayoutKind.Sequential, Pack = StructConst.PACK_SIZE)]
-	public struct StatusInfo {
+	public struct ConnectionStatusChangedInfo {
 		private const int callback = Library.socketsCallbacks + 1;
 		public Connection connection;
 		public ConnectionInfo connectionInfo;
@@ -422,7 +446,7 @@ namespace Valve.Sockets {
 		#endif
 	}
 
-	public delegate void StatusCallback(ref StatusInfo info);
+	public delegate void ConnectionStatusChangedCallback(ref ConnectionStatusChangedInfo info);
 	public delegate void DebugCallback(DebugType type, string message);
 
 	#if VALVESOCKETS_SPAN
@@ -707,7 +731,7 @@ namespace Valve.Sockets {
 			}
 		}
 
-		public bool SetStatusCallback(StatusCallback callback) {
+		public bool SetConnectionStatusChangedCallback(ConnectionStatusChangedCallback callback) {
 			return Native.SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged(nativeUtils, callback);
 		}
 
@@ -939,7 +963,7 @@ namespace Valve.Sockets {
 		internal static extern bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged(IntPtr utils, IntPtr callback);
 
 		[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged(IntPtr utils, StatusCallback callback);
+		internal static extern bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged(IntPtr utils, ConnectionStatusChangedCallback callback);
 
 		[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction(IntPtr utils, DebugType detailLevel, IntPtr callback);
