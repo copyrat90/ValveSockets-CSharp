@@ -15,7 +15,7 @@ namespace Valve.Sockets
     /// <para>way to detect that this is happening is that querying the session state may return</para>
     /// <para>none, connecting, and findingroute again.</para>
     /// </remarks>
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = Native.PackSize)]
     public partial struct SteamNetworkingMessagesSessionFailed
     {
         public SteamNetConnectionInfo m_info;

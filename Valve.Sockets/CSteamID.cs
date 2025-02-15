@@ -5,6 +5,7 @@ using static Valve.Sockets.EUniverse;
 
 namespace Valve.Sockets
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public partial struct CSteamID
     {
         private SteamID m_steamid;

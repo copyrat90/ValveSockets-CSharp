@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 
 namespace Valve.Sockets
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [StructLayout(LayoutKind.Sequential, Pack = Native.PackSize)]
     public unsafe partial struct SteamNetConnectionRealTimeStatus
     {
         public ESteamNetworkingConnectionState m_eState;

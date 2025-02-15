@@ -7,6 +7,13 @@ namespace Valve.Sockets
 {
     public static partial class Native
     {
+#if VALVE_CALLBACK_PACK_SMALL
+        public const int PackSize = 4;
+#elif VALVE_CALLBACK_PACK_LARGE
+        public const int PackSize = 8;
+#else
+        #error "Unknown struct pack size. Define `VALVE_CALLBACK_PACK_SMALL` on Linux/Apple/FreeBSD, or define `VALVE_CALLBACK_PACK_LARGE` on other platform."
+#endif
 
         public delegate IntPtr Pfn_malloc(ulong param1);
 

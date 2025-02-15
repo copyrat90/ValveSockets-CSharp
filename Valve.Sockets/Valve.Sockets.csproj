@@ -15,6 +15,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <DefineConstants>VALVE_CALLBACK_PACK_LARGE</DefineConstants>
+        <DefineConstants Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'
+            Or '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))'
+            Or '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::FreeBSD)))'">VALVE_CALLBACK_PACK_SMALL</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <ArrayNamespace>Valve.Sockets.ArrayStructs</ArrayNamespace>
         <ArrayOutputPath>ArrayStructs</ArrayOutputPath>
     </PropertyGroup>

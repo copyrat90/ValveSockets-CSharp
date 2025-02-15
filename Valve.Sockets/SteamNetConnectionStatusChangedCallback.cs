@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace Valve.Sockets
 {
     /// <summary>
@@ -36,6 +38,7 @@ namespace Valve.Sockets
     /// <para>state by the time you process this callback.</para>
     /// <para>Also note that callbacks will be posted when connections are created and destroyed by your own API calls.</para>
     /// </remarks>
+    [StructLayout(LayoutKind.Sequential, Pack = Native.PackSize)]
     public partial struct SteamNetConnectionStatusChangedCallback
     {
         public uint m_hConn;
