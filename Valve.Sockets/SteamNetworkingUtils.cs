@@ -77,9 +77,9 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingUtils_GetPOPCount(_instance);
         }
 
-        public int GetPOPList(ref SteamNetworkingPOPID[] list, int nListSz)
+        public int GetPOPList(SteamNetworkingPOPID[] list, int nListSz)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_GetPOPList(_instance, ref list, nListSz);
+            return Native.SteamAPI_ISteamNetworkingUtils_GetPOPList(_instance, list, nListSz);
         }
 
         public long GetLocalTimestamp()

@@ -215,10 +215,10 @@ namespace Valve.Sockets
         }
 
         public EResult GetGameCoordinatorServerLogin(SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob,
-            ref byte[] pBlob)
+            byte[] pBlob)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetGameCoordinatorServerLogin(_instance, ref pLoginInfo,
-                ref pcbSignedBlob, ref pBlob);
+                ref pcbSignedBlob, pBlob);
         }
 
         public uint ConnectP2PCustomSignaling(ISteamNetworkingConnectionSignaling pSignaling, SteamNetworkingIdentity pPeerIdentity,
@@ -228,16 +228,16 @@ namespace Valve.Sockets
                 pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
         }
 
-        public bool ReceivedP2PCustomSignal(ref byte[] pMsg, int cbMsg, ISteamNetworkingSignalingRecvContext pContext)
+        public bool ReceivedP2PCustomSignal(byte[] pMsg, int cbMsg, ISteamNetworkingSignalingRecvContext pContext)
         {
             // TODO: Check if this is correct
-            return Native.SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(_instance, ref pMsg, cbMsg,
+            return Native.SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(_instance, pMsg, cbMsg,
                 ref pContext);
         }
 
-        public bool GetCertificateRequest(ref int pcbBlob, ref byte[] pBlob, ref SteamNetworkingErrMsg errMsg)
+        public bool GetCertificateRequest(ref int pcbBlob, byte[] pBlob, ref SteamNetworkingErrMsg errMsg)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(_instance, ref pcbBlob, ref pBlob,
+            return Native.SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(_instance, ref pcbBlob, pBlob,
                 ref errMsg);
         }
 

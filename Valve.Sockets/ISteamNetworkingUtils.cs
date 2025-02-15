@@ -170,7 +170,7 @@ namespace Valve.Sockets
         /// <para>Get list of all POP IDs.  Returns the number of entries that were filled into</para>
         /// <para>your list.</para>
         /// </summary>
-        int GetPOPList(ref SteamNetworkingPOPID[] list, int nListSz);
+        int GetPOPList(SteamNetworkingPOPID[] list, int nListSz);
 
         /// <summary>Fetch current timestamp.  This timer has the following properties:</summary>
         /// <remarks>

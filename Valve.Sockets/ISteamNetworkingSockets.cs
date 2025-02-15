@@ -681,7 +681,7 @@ namespace Valve.Sockets
         /// <para>NOTE: The routing blob returned here is not encrypted.  Send it to your backend</para>
         /// <para>and don't share it directly with clients.</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetGameCoordinatorServerLogin(global::Valve.Sockets.SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob, ref byte[] pBlob);
+        global::Valve.Sockets.EResult GetGameCoordinatorServerLogin(global::Valve.Sockets.SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob, byte[] pBlob);
 
         /// <summary>
         /// <para>Create a P2P "client" connection that does signaling over a custom</para>
@@ -744,7 +744,7 @@ namespace Valve.Sockets
         /// <para>If you expect to be using relayed connections, then you probably want</para>
         /// <para>to call ISteamNetworkingUtils::InitRelayNetworkAccess() when your app initializes</para>
         /// </remarks>
-        bool ReceivedP2PCustomSignal(ref byte[] pMsg, int cbMsg, global::Valve.Sockets.ISteamNetworkingSignalingRecvContext pContext);
+        bool ReceivedP2PCustomSignal(byte[] pMsg, int cbMsg, global::Valve.Sockets.ISteamNetworkingSignalingRecvContext pContext);
 
         /// <summary>
         /// <para>Get blob that describes a certificate request.  You can send this to your game coordinator.</para>
@@ -753,7 +753,7 @@ namespace Valve.Sockets
         /// <para>size.  (512 bytes is a conservative estimate.)</para>
         /// </summary>
         /// <remarks>Pass this blob to your game coordinator and call SteamDatagram_CreateCert.</remarks>
-        bool GetCertificateRequest(ref int pcbBlob, ref byte[] pBlob, ref SteamNetworkingErrMsg errMsg);
+        bool GetCertificateRequest(ref int pcbBlob, byte[] pBlob, ref SteamNetworkingErrMsg errMsg);
 
         /// <summary>
         /// <para>Set the certificate.  The certificate blob should be the output of</para>
