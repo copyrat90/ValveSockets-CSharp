@@ -3,5 +3,5 @@ using System.Runtime.InteropServices;
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate void FnSteamNetworkingMessagesSessionFailed(SteamNetworkingMessagesSessionFailed* param0);
+    public delegate void FnSteamNetworkingMessagesSessionFailed(ref SteamNetworkingMessagesSessionFailed param0);
 }

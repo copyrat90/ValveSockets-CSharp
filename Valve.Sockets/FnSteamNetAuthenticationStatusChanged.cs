@@ -3,5 +3,5 @@ using System.Runtime.InteropServices;
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate void FnSteamNetAuthenticationStatusChanged(SteamNetAuthenticationStatus* param0);
+    public delegate void FnSteamNetAuthenticationStatusChanged(ref SteamNetAuthenticationStatus param0);
 }

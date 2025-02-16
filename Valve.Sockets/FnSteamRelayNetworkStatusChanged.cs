@@ -3,5 +3,5 @@ using System.Runtime.InteropServices;
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate void FnSteamRelayNetworkStatusChanged(SteamRelayNetworkStatus* param0);
+    public delegate void FnSteamRelayNetworkStatusChanged(ref SteamRelayNetworkStatus param0);
 }

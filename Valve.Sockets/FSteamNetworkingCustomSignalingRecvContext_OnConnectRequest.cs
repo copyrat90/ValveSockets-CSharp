@@ -1,7 +1,8 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate ISteamNetworkingConnectionSignaling* FSteamNetworkingCustomSignalingRecvContext_OnConnectRequest(void* ctx, uint hConn, SteamNetworkingIdentity* identityPeer, int nLocalVirtualPort);
+    public delegate IntPtr FSteamNetworkingCustomSignalingRecvContext_OnConnectRequest(Span<byte> ctx, uint hConn, in SteamNetworkingIdentity identityPeer, int nLocalVirtualPort);
 }

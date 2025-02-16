@@ -1,7 +1,8 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate void FSteamNetworkingSocketsDebugOutput(ESteamNetworkingSocketsDebugOutputType nType, sbyte* pszMsg);
+    public delegate void FSteamNetworkingSocketsDebugOutput(ESteamNetworkingSocketsDebugOutputType nType, [MarshalAs(UnmanagedType.LPStr)] string pszMsg);
 }

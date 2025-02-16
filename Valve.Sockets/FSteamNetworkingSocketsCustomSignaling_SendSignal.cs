@@ -1,7 +1,8 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Valve.Sockets
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate bool FSteamNetworkingSocketsCustomSignaling_SendSignal(void* ctx, uint hConn, SteamNetConnectionInfo* info, void* pMsg, int cbMsg);
+    public delegate bool FSteamNetworkingSocketsCustomSignaling_SendSignal(Span<byte> ctx, uint hConn, in SteamNetConnectionInfo info, Span<byte> pMsg, int cbMsg);
 }
