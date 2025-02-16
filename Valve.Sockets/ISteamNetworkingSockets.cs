@@ -292,7 +292,7 @@ namespace Valve.Sockets
         /// <para>See ISteamNetworkingSockets::SendMessageToConnection for possible</para>
         /// <para>failure codes.</para>
         /// </remarks>
-        void SendMessages(int nMessages, global::Valve.Sockets.SteamNetworkingMessage[] pMessages, ref long pOutMessageNumberOrResult);
+        void SendMessages(int nMessages, IntPtr[] pMessages, ref long pOutMessageNumberOrResult);
 
         /// <summary>
         /// <para>Flush any messages waiting on the Nagle timer and send them</para>
@@ -327,7 +327,7 @@ namespace Valve.Sockets
         /// <para>of them free up resources after you are done.  It is safe to keep the object alive for</para>
         /// <para>a little while (put it into some queue, etc), and you may call Release() from any thread.</para>
         /// </remarks>
-        int ReceiveMessagesOnConnection(uint hConn, ref global::Valve.Sockets.SteamNetworkingMessage[] ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnConnection(uint hConn, IntPtr[] ppOutMessages, int nMaxMessages);
 
         /// <summary>Returns basic information about the high-level state of the connection.</summary>
         bool GetConnectionInfo(uint hConn, global::Valve.Sockets.SteamNetConnectionInfo pInfo);
@@ -552,7 +552,7 @@ namespace Valve.Sockets
         /// <para>appear consecutively in the list; they may be interleaved with messages for</para>
         /// <para>other connections.)</para>
         /// </remarks>
-        int ReceiveMessagesOnPollGroup(uint hPollGroup, ref global::Valve.Sockets.SteamNetworkingMessage[] ppOutMessages, int nMaxMessages);
+        int ReceiveMessagesOnPollGroup(uint hPollGroup, IntPtr[] ppOutMessages, int nMaxMessages);
 
         /// <summary>
         /// <para>Call this when you receive a ticket from your backend / matchmaking system.  Puts the</para>

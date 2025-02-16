@@ -85,9 +85,9 @@ namespace Valve.Sockets
                 nSendFlags, ref pOutMessageNumber);
         }
 
-        public void SendMessages(int nMessages, SteamNetworkingMessage[] pMessages, ref long pOutMessageNumberOrResult)
+        public void SendMessages(int nMessages, IntPtr[] pMessages, ref long pOutMessageNumberOrResult)
         {
-            Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, ref pMessages, ref pOutMessageNumberOrResult);
+            Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, pMessages, ref pOutMessageNumberOrResult);
         }
 
         public EResult FlushMessagesOnConnection(uint hConn)
@@ -95,10 +95,10 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_FlushMessagesOnConnection(_instance, hConn);
         }
 
-        public int ReceiveMessagesOnConnection(uint hConn, ref SteamNetworkingMessage[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnConnection(uint hConn, IntPtr[] ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection(_instance, hConn,
-                ref ppOutMessages, nMaxMessages);
+                ppOutMessages, nMaxMessages);
         }
 
         public bool GetConnectionInfo(uint hConn, SteamNetConnectionInfo pInfo)
@@ -166,10 +166,10 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_SetConnectionPollGroup(_instance, hConn, hPollGroup);
         }
 
-        public int ReceiveMessagesOnPollGroup(uint hPollGroup, ref SteamNetworkingMessage[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnPollGroup(uint hPollGroup, IntPtr[] ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(_instance, hPollGroup,
-                ref ppOutMessages, nMaxMessages);
+                ppOutMessages, nMaxMessages);
         }
 
         public bool ReceivedRelayAuthTicket(byte[] pvTicket, int cbTicket, SteamDatagramRelayAuthTicket pOutParsedTicket)

@@ -1,7 +1,9 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Valve.Sockets
 {
+    [StructLayout(LayoutKind.Sequential)]
     public partial struct SteamNetworkingMessage
     {
         public IntPtr m_pData;
@@ -23,9 +25,10 @@ namespace Valve.Sockets
         public ushort m_idxLane;
         public ushort _pad1__;
 
-        public void Dispose()
+        // Unfortunately, we don't have native IntPtr here, so it should be passed as an argument.
+        public static void Release(IntPtr self)
         {
-            Native.SteamAPI_SteamNetworkingMessage_Release(ref this);
+            Native.SteamAPI_SteamNetworkingMessage_t_Release(self);
         }
 
         public uint GetSize()

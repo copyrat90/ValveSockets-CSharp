@@ -208,7 +208,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamAPI_ISteamNetworkingSockets_SendMessages(IntPtr self,int nMessages,[MarshalUsing(CountElementName = nameof(nMessages))] ref SteamNetworkingMessage[] pMessages,ref long pOutMessageNumberOrResult);
+        public static partial void SteamAPI_ISteamNetworkingSockets_SendMessages(IntPtr self,int nMessages,IntPtr[] pMessages,ref long pOutMessageNumberOrResult);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -216,7 +216,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection(IntPtr self,uint hConn,[MarshalUsing(CountElementName = nameof(nMaxMessages))] ref SteamNetworkingMessage[] ppOutMessages,int nMaxMessages);
+        public static partial int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection(IntPtr self,uint hConn,IntPtr[] ppOutMessages,int nMaxMessages);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -274,7 +274,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(IntPtr self,uint hPollGroup,[MarshalUsing(CountElementName = nameof(nMaxMessages))] ref SteamNetworkingMessage[] ppOutMessages,int nMaxMessages);
+        public static partial int SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(IntPtr self,uint hPollGroup,IntPtr[] ppOutMessages,int nMaxMessages);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -596,7 +596,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamAPI_SteamNetworkingMessage_Release(ref SteamNetworkingMessage self);
+        public static partial void SteamAPI_SteamNetworkingMessage_t_Release(IntPtr self);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
