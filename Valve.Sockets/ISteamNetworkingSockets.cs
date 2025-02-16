@@ -58,7 +58,7 @@ namespace Valve.Sockets
         /// <para>When a client attempts to connect, a SteamNetConnectionStatusChangedCallback</para>
         /// <para>will be posted.  The connection will be in the connecting state.</para>
         /// </remarks>
-        uint CreateListenSocketIP(global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
+        uint CreateListenSocketIP(in global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Creates a connection and begins talking to a "server" over UDP at the</para>
@@ -82,7 +82,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectByIPAddress(global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
+        uint ConnectByIPAddress(in global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>Like CreateListenSocketIP, but clients will connect using ConnectP2P.</summary>
         /// <remarks>
@@ -120,7 +120,7 @@ namespace Valve.Sockets
         /// <para>- ConnectP2PCustomSignaling</para>
         /// <para>- k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling</para>
         /// </remarks>
-        uint ConnectP2P(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
+        uint ConnectP2P(in global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>Accept an incoming connection that has been received on a listen socket.</summary>
         /// <remarks>
@@ -570,7 +570,7 @@ namespace Valve.Sockets
         /// <para>Typically this is useful just to confirm that you have a ticket, before you</para>
         /// <para>call ConnectToHostedDedicatedServer to connect to the server.</para>
         /// </remarks>
-        int FindRelayAuthTicketForServer(global::Valve.Sockets.SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort, global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
+        int FindRelayAuthTicketForServer(in global::Valve.Sockets.SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort, ref global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         /// <summary>
         /// <para>Client call to connect to a server hosted in a Valve data center, on the specified virtual</para>
@@ -589,7 +589,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectToHostedDedicatedServer(global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
+        uint ConnectToHostedDedicatedServer(in global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Returns the value of the SDR_LISTEN_PORT environment variable.  This</para>

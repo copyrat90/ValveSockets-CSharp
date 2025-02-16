@@ -81,7 +81,7 @@ namespace Valve.Sockets
         /// <para>This always return the most up-to-date information we have available</para>
         /// <para>right now, even if we are in the middle of re-calculating ping times.</para>
         /// </remarks>
-        float GetLocalPingLocation(global::Valve.Sockets.SteamNetworkPingLocation result);
+        float GetLocalPingLocation(ref global::Valve.Sockets.SteamNetworkPingLocation result);
 
         /// <summary>
         /// <para>Estimate the round-trip latency between two arbitrary locations, in</para>
@@ -105,7 +105,7 @@ namespace Valve.Sockets
         /// <para>Do you need to be able to do this from a backend/matchmaking server?</para>
         /// <para>You are looking for the "game coordinator" library.</para>
         /// </remarks>
-        int EstimatePingTimeBetweenTwoLocations(global::Valve.Sockets.SteamNetworkPingLocation location1, global::Valve.Sockets.SteamNetworkPingLocation location2);
+        int EstimatePingTimeBetweenTwoLocations(in global::Valve.Sockets.SteamNetworkPingLocation location1, in global::Valve.Sockets.SteamNetworkPingLocation location2);
 
         /// <summary>
         /// <para>Same as EstimatePingTime, but assumes that one location is the local host.</para>
@@ -118,7 +118,7 @@ namespace Valve.Sockets
         /// <para>this function uses a slightly more complete set of information about what</para>
         /// <para>route would be taken.</para>
         /// </remarks>
-        int EstimatePingTimeFromLocalHost(global::Valve.Sockets.SteamNetworkPingLocation remoteLocation);
+        int EstimatePingTimeFromLocalHost(in global::Valve.Sockets.SteamNetworkPingLocation remoteLocation);
 
         /// <summary>
         /// <para>Convert a ping location into a text format suitable for sending over the wire.</para>
@@ -126,13 +126,13 @@ namespace Valve.Sockets
         /// <para>so please do not parse it yourself.  Your buffer must be at least</para>
         /// <para>k_cchMaxSteamNetworkingPingLocationString bytes.</para>
         /// </summary>
-        void ConvertPingLocationToString(global::Valve.Sockets.SteamNetworkPingLocation location, string pszBuf, int cchBufSize);
+        void ConvertPingLocationToString(in global::Valve.Sockets.SteamNetworkPingLocation location, string pszBuf, int cchBufSize);
 
         /// <summary>
         /// <para>Parse back SteamNetworkPingLocation string.  Returns false if we couldn't understand</para>
         /// <para>the string.</para>
         /// </summary>
-        bool ParsePingLocationString(string pszString, global::Valve.Sockets.SteamNetworkPingLocation result);
+        bool ParsePingLocationString(string pszString, ref global::Valve.Sockets.SteamNetworkPingLocation result);
 
         /// <summary>
         /// <para>Check if the ping data of sufficient recency is available, and if</para>

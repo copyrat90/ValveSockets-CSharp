@@ -31,30 +31,30 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingUtils_GetRelayNetworkStatus(_instance, ref pDetails);
         }
 
-        public float GetLocalPingLocation(SteamNetworkPingLocation result)
+        public float GetLocalPingLocation(ref SteamNetworkPingLocation result)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_GetLocalPingLocation(_instance, result);
+            return Native.SteamAPI_ISteamNetworkingUtils_GetLocalPingLocation(_instance, ref result);
         }
 
-        public int EstimatePingTimeBetweenTwoLocations(SteamNetworkPingLocation location1, SteamNetworkPingLocation location2)
+        public int EstimatePingTimeBetweenTwoLocations(in SteamNetworkPingLocation location1, in SteamNetworkPingLocation location2)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeBetweenTwoLocations(_instance, location1,
-                location2);
+            return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeBetweenTwoLocations(_instance, in location1,
+                in location2);
         }
 
-        public int EstimatePingTimeFromLocalHost(SteamNetworkPingLocation remoteLocation)
+        public int EstimatePingTimeFromLocalHost(in SteamNetworkPingLocation remoteLocation)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeFromLocalHost(_instance, remoteLocation);
+            return Native.SteamAPI_ISteamNetworkingUtils_EstimatePingTimeFromLocalHost(_instance, in remoteLocation);
         }
 
-        public void ConvertPingLocationToString(SteamNetworkPingLocation location, string pszBuf, int cchBufSize)
+        public void ConvertPingLocationToString(in SteamNetworkPingLocation location, string pszBuf, int cchBufSize)
         {
-            Native.SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString(_instance, location, pszBuf, cchBufSize);
+            Native.SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString(_instance, in location, pszBuf, cchBufSize);
         }
 
-        public bool ParsePingLocationString(string pszString, SteamNetworkPingLocation result)
+        public bool ParsePingLocationString(string pszString, ref SteamNetworkPingLocation result)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_ParsePingLocationString(_instance, pszString, result);
+            return Native.SteamAPI_ISteamNetworkingUtils_ParsePingLocationString(_instance, pszString, ref result);
         }
 
         public bool CheckPingDataUpToDate(float flMaxAgeSeconds)
@@ -90,7 +90,7 @@ namespace Valve.Sockets
         public void SetDebugOutputFunction(ESteamNetworkingSocketsDebugOutputType eDetailLevel,
             FSteamNetworkingSocketsDebugOutput pfnFunc)
         {
-            Native.SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction(_instance, eDetailLevel, ref pfnFunc);
+            Native.SteamAPI_ISteamNetworkingUtils_SetDebugOutputFunction(_instance, eDetailLevel, pfnFunc);
         }
 
         public bool IsFakeIPv4()

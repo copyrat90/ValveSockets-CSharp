@@ -33,7 +33,7 @@ namespace Valve.Sockets
             return true;
         }
 
-        public void SetIPv6(in byte[] ipv6,ushort nPort)
+        public void SetIPv6(byte[] ipv6,ushort nPort)
         {
             ipv6.AsSpan().CopyTo(Union.m_ipv6.AsSpan());
             m_port = nPort;

@@ -21,14 +21,14 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public uint CreateListenSocketIP(SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint CreateListenSocketIP(in SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(_instance, localAddress, nOptions, pOptions);
+            return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(_instance, in localAddress, nOptions, pOptions);
         }
 
-        public uint ConnectByIPAddress(SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint ConnectByIPAddress(in SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(_instance, address, nOptions, pOptions);
+            return Native.SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(_instance, in address, nOptions, pOptions);
         }
 
         public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue[] pOptions)
@@ -37,10 +37,10 @@ namespace Valve.Sockets
                 nLocalVirtualPort, nOptions, pOptions);
         }
 
-        public uint ConnectP2P(SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions,
+        public uint ConnectP2P(in SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions,
             SteamNetworkingConfigValue[] pOptions)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2P(_instance, identityRemote, nRemoteVirtualPort,
+            return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2P(_instance, in identityRemote, nRemoteVirtualPort,
                 nOptions, pOptions);
         }
 
@@ -178,17 +178,17 @@ namespace Valve.Sockets
                 ref pOutParsedTicket);
         }
 
-        public int FindRelayAuthTicketForServer(SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort,
-            SteamDatagramRelayAuthTicket pOutParsedTicket)
+        public int FindRelayAuthTicketForServer(in SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort,
+            ref SteamDatagramRelayAuthTicket pOutParsedTicket)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_FindRelayAuthTicketForServer(_instance, identityGameServer,
+            return Native.SteamAPI_ISteamNetworkingSockets_FindRelayAuthTicketForServer(_instance, in identityGameServer,
                 nRemoteVirtualPort, ref pOutParsedTicket);
         }
 
-        public uint ConnectToHostedDedicatedServer(SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
+        public uint ConnectToHostedDedicatedServer(in SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
             SteamNetworkingConfigValue[] pOptions)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(_instance, identityTarget,
+            return Native.SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(_instance, in identityTarget,
                 nRemoteVirtualPort, nOptions, pOptions);
         }
 
