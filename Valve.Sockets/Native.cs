@@ -15,12 +15,16 @@ namespace Valve.Sockets
         #error "Unknown struct pack size. Define `VALVE_CALLBACK_PACK_SMALL` on Linux/Apple/FreeBSD, or define `VALVE_CALLBACK_PACK_LARGE` on other platform."
 #endif
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate IntPtr Pfn_malloc(ulong param1);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void Pfn_free(IntPtr param1);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate IntPtr Pfn_realloc(IntPtr param1,ulong param2);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void Callback([MarshalAs(UnmanagedType.LPStr)] string param1,SteamNetworkingMicroseconds param2);
     }
 
