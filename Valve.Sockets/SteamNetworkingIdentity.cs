@@ -111,7 +111,7 @@ namespace Valve.Sockets
             return m_eType == k_ESteamNetworkingIdentityType_IPAddress && Union.m_ip.IsLocalHost();
         }
 
-        public bool SetGenericString(in string pszString)
+        public bool SetGenericString(string pszString)
         {
             byte[] data = Encoding.Default.GetBytes(pszString);
 

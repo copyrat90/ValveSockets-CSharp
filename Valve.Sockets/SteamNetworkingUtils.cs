@@ -49,7 +49,7 @@ namespace Valve.Sockets
 
         public void ConvertPingLocationToString(SteamNetworkPingLocation location, string pszBuf, int cchBufSize)
         {
-            Native.SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString(_instance, location, ref pszBuf, cchBufSize);
+            Native.SteamAPI_ISteamNetworkingUtils_ConvertPingLocationToString(_instance, location, pszBuf, cchBufSize);
         }
 
         public bool ParsePingLocationString(string pszString, SteamNetworkPingLocation result)

@@ -76,7 +76,7 @@ namespace Valve.Sockets
 
         public bool GetConnectionName(uint hPeer, string pszName, int nMaxLen)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionName(_instance, hPeer, ref pszName, nMaxLen);
+            return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionName(_instance, hPeer, pszName, nMaxLen);
         }
 
         public EResult SendMessageToConnection(uint hConn, byte[] pData, uint cbData, int nSendFlags, ref long pOutMessageNumber)
@@ -115,7 +115,7 @@ namespace Valve.Sockets
 
         public int GetDetailedConnectionStatus(uint hConn, string pszBuf, int cbBuf)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_GetDetailedConnectionStatus(_instance, hConn, ref pszBuf, cbBuf);
+            return Native.SteamAPI_ISteamNetworkingSockets_GetDetailedConnectionStatus(_instance, hConn, pszBuf, cbBuf);
         }
 
         public bool GetListenSocketAddress(uint hSocket, SteamNetworkingIPAddr address)

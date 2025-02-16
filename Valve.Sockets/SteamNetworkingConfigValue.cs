@@ -39,11 +39,11 @@ namespace Valve.Sockets
             m_val.m_ptr = data;
         }
 
-        public void SetString(ESteamNetworkingConfigValue eVal,in string data)
+        public void SetString(ESteamNetworkingConfigValue eVal,string data)
         {
             m_eValue = eVal;
             m_eDataType = k_ESteamNetworkingConfig_Ptr;
-            m_val.m_string = Marshal.StringToHGlobalAuto(data);
+            m_val.m_string = Marshal.StringToHGlobalAnsi(data);
         }
 
         [StructLayout(LayoutKind.Explicit)]
