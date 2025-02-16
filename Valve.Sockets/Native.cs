@@ -156,19 +156,19 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(IntPtr self,SteamNetworkingIPAddr localAddress,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(IntPtr self,SteamNetworkingIPAddr localAddress,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(IntPtr self,SteamNetworkingIPAddr address,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(IntPtr self,SteamNetworkingIPAddr address,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P(IntPtr self,int nLocalVirtualPort,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P(IntPtr self,int nLocalVirtualPort,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectP2P(IntPtr self,SteamNetworkingIdentity identityRemote,int nRemoteVirtualPort,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectP2P(IntPtr self,SteamNetworkingIdentity identityRemote,int nRemoteVirtualPort,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -225,7 +225,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial EResult SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus(IntPtr self,uint hConn,ref SteamNetConnectionRealTimeStatus pStats,int nLanes,ref SteamNetConnectionRealTimeLaneStatus pLanes);
+        public static partial EResult SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus(IntPtr self,uint hConn,ref SteamNetConnectionRealTimeStatus pStats,int nLanes,SteamNetConnectionRealTimeLaneStatus[] pLanes);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -287,7 +287,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(IntPtr self,SteamNetworkingIdentity identityTarget,int nRemoteVirtualPort,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(IntPtr self,SteamNetworkingIdentity identityTarget,int nRemoteVirtualPort,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -303,7 +303,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket(IntPtr self,int nLocalVirtualPort,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket(IntPtr self,int nLocalVirtualPort,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -311,7 +311,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling(IntPtr self,ref ISteamNetworkingConnectionSignaling pSignaling,in SteamNetworkingIdentity pPeerIdentity,int nRemoteVirtualPort,int nOptions,in SteamNetworkingConfigValue pOptions);
+        public static partial uint SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling(IntPtr self,ref ISteamNetworkingConnectionSignaling pSignaling,in SteamNetworkingIdentity pPeerIdentity,int nRemoteVirtualPort,int nOptions,SteamNetworkingConfigValue[] pOptions);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]

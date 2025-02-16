@@ -58,7 +58,7 @@ namespace Valve.Sockets
         /// <para>When a client attempts to connect, a SteamNetConnectionStatusChangedCallback</para>
         /// <para>will be posted.  The connection will be in the connecting state.</para>
         /// </remarks>
-        uint CreateListenSocketIP(global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint CreateListenSocketIP(global::Valve.Sockets.SteamNetworkingIPAddr localAddress, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Creates a connection and begins talking to a "server" over UDP at the</para>
@@ -82,7 +82,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectByIPAddress(global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint ConnectByIPAddress(global::Valve.Sockets.SteamNetworkingIPAddr address, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>Like CreateListenSocketIP, but clients will connect using ConnectP2P.</summary>
         /// <remarks>
@@ -105,7 +105,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Begin connecting to a peer that is identified using a platform-specific identifier.</para>
@@ -120,7 +120,7 @@ namespace Valve.Sockets
         /// <para>- ConnectP2PCustomSignaling</para>
         /// <para>- k_ESteamNetworkingConfig_Callback_CreateConnectionSignaling</para>
         /// </remarks>
-        uint ConnectP2P(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint ConnectP2P(global::Valve.Sockets.SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>Accept an incoming connection that has been received on a listen socket.</summary>
         /// <remarks>
@@ -348,7 +348,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultNoConnection - connection handle is invalid or connection has been closed.</para>
         /// <para>- k_EResultInvalidParam - nLanes is bad</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetConnectionRealTimeStatus(uint hConn, global::Valve.Sockets.SteamNetConnectionRealTimeStatus pStatus, int nLanes, global::Valve.Sockets.SteamNetConnectionRealTimeLaneStatus pLanes);
+        global::Valve.Sockets.EResult GetConnectionRealTimeStatus(uint hConn, global::Valve.Sockets.SteamNetConnectionRealTimeStatus pStatus, int nLanes, global::Valve.Sockets.SteamNetConnectionRealTimeLaneStatus[] pLanes);
 
         /// <summary>
         /// <para>Returns detailed connection stats in text format.  Useful</para>
@@ -589,7 +589,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectToHostedDedicatedServer(global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint ConnectToHostedDedicatedServer(global::Valve.Sockets.SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Returns the value of the SDR_LISTEN_PORT environment variable.  This</para>
@@ -650,7 +650,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Generate an authentication blob that can be used to securely login with</para>
@@ -714,7 +714,7 @@ namespace Valve.Sockets
         /// <para>SteamNetworkingConfigValue for more about why this is preferable to</para>
         /// <para>setting the options "immediately" after creation.</para>
         /// </remarks>
-        uint ConnectP2PCustomSignaling(global::Valve.Sockets.ISteamNetworkingConnectionSignaling pSignaling, global::Valve.Sockets.SteamNetworkingIdentity pPeerIdentity, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint ConnectP2PCustomSignaling(global::Valve.Sockets.ISteamNetworkingConnectionSignaling pSignaling, global::Valve.Sockets.SteamNetworkingIdentity pPeerIdentity, int nRemoteVirtualPort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>Called when custom signaling has received a message.  When your</para>
@@ -844,7 +844,7 @@ namespace Valve.Sockets
         /// <para>BeginAsyncRequestFakeIP.  However, you do not need to wait for the</para>
         /// <para>request to complete before creating the listen socket.</para>
         /// </remarks>
-        uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue pOptions);
+        uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, global::Valve.Sockets.SteamNetworkingConfigValue[] pOptions);
 
         /// <summary>
         /// <para>If the connection was initiated using the "FakeIP" system, then we</para>

@@ -21,24 +21,24 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public uint CreateListenSocketIP(SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue pOptions)
+        public uint CreateListenSocketIP(SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(_instance, localAddress, nOptions, pOptions);
         }
 
-        public uint ConnectByIPAddress(SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue pOptions)
+        public uint ConnectByIPAddress(SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(_instance, address, nOptions, pOptions);
         }
 
-        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue pOptions)
+        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
         }
 
         public uint ConnectP2P(SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue pOptions)
+            SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2P(_instance, identityRemote, nRemoteVirtualPort,
                 nOptions, pOptions);
@@ -107,10 +107,10 @@ namespace Valve.Sockets
         }
 
         public EResult GetConnectionRealTimeStatus(uint hConn, SteamNetConnectionRealTimeStatus pStatus, int nLanes,
-            SteamNetConnectionRealTimeLaneStatus pLanes)
+            SteamNetConnectionRealTimeLaneStatus[] pLanes)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus(_instance, hConn, ref pStatus,
-                nLanes, ref pLanes);
+                nLanes, pLanes);
         }
 
         public int GetDetailedConnectionStatus(uint hConn, string pszBuf, int cbBuf)
@@ -186,7 +186,7 @@ namespace Valve.Sockets
         }
 
         public uint ConnectToHostedDedicatedServer(SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue pOptions)
+            SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(_instance, identityTarget,
                 nRemoteVirtualPort, nOptions, pOptions);
@@ -208,7 +208,7 @@ namespace Valve.Sockets
         }
 
         public uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions,
-            SteamNetworkingConfigValue pOptions)
+            SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
@@ -222,7 +222,7 @@ namespace Valve.Sockets
         }
 
         public uint ConnectP2PCustomSignaling(ISteamNetworkingConnectionSignaling pSignaling, SteamNetworkingIdentity pPeerIdentity,
-            int nRemoteVirtualPort, int nOptions, SteamNetworkingConfigValue pOptions)
+            int nRemoteVirtualPort, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling(_instance, ref pSignaling,
                 pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
@@ -267,7 +267,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, SteamNetworkingConfigValue pOptions)
+        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, SteamNetworkingConfigValue[] pOptions)
         {
             throw new NotImplementedException();
         }
