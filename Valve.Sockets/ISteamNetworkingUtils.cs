@@ -170,7 +170,7 @@ namespace Valve.Sockets
         /// <para>Get list of all POP IDs.  Returns the number of entries that were filled into</para>
         /// <para>your list.</para>
         /// </summary>
-        int GetPOPList(SteamNetworkingPOPID[] list, int nListSz);
+        int GetPOPList(Span<SteamNetworkingPOPID> list, int nListSz);
 
         /// <summary>Fetch current timestamp.  This timer has the following properties:</summary>
         /// <remarks>
@@ -250,7 +250,7 @@ namespace Valve.Sockets
         /// <para>NOTE: When setting pointers (e.g. callback functions), do not pass the function pointer directly.</para>
         /// <para>Your argument should be a pointer to a function pointer.</para>
         /// </summary>
-        bool SetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, global::Valve.Sockets.ESteamNetworkingConfigDataType eDataType, byte[] pArg);
+        bool SetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, global::Valve.Sockets.ESteamNetworkingConfigDataType eDataType, ReadOnlySpan<byte> pArg);
 
         /// <summary>
         /// <para>Set a configuration value, using a struct to pass the value.</para>

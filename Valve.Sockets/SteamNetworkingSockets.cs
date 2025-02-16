@@ -21,24 +21,24 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public uint CreateListenSocketIP(in SteamNetworkingIPAddr localAddress, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint CreateListenSocketIP(in SteamNetworkingIPAddr localAddress, int nOptions, ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketIP(_instance, in localAddress, nOptions, pOptions);
         }
 
-        public uint ConnectByIPAddress(in SteamNetworkingIPAddr address, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint ConnectByIPAddress(in SteamNetworkingIPAddr address, int nOptions, ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectByIPAddress(_instance, in address, nOptions, pOptions);
         }
 
-        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint CreateListenSocketP2P(int nLocalVirtualPort, int nOptions, ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateListenSocketP2P(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
         }
 
         public uint ConnectP2P(in SteamNetworkingIdentity identityRemote, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue[] pOptions)
+            ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2P(_instance, in identityRemote, nRemoteVirtualPort,
                 nOptions, pOptions);
@@ -79,13 +79,13 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionName(_instance, hPeer, pszName, nMaxLen);
         }
 
-        public EResult SendMessageToConnection(uint hConn, byte[] pData, uint cbData, int nSendFlags, ref long pOutMessageNumber)
+        public EResult SendMessageToConnection(uint hConn, ReadOnlySpan<byte> pData, uint cbData, int nSendFlags, ref long pOutMessageNumber)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_SendMessageToConnection(_instance, hConn, pData, cbData,
                 nSendFlags, ref pOutMessageNumber);
         }
 
-        public void SendMessages(int nMessages, IntPtr[] pMessages, ref long pOutMessageNumberOrResult)
+        public void SendMessages(int nMessages, ReadOnlySpan<IntPtr> pMessages, ref long pOutMessageNumberOrResult)
         {
             Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, pMessages, ref pOutMessageNumberOrResult);
         }
@@ -95,7 +95,7 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_FlushMessagesOnConnection(_instance, hConn);
         }
 
-        public int ReceiveMessagesOnConnection(uint hConn, IntPtr[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnConnection(uint hConn, Span<IntPtr> ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnConnection(_instance, hConn,
                 ppOutMessages, nMaxMessages);
@@ -107,7 +107,7 @@ namespace Valve.Sockets
         }
 
         public EResult GetConnectionRealTimeStatus(uint hConn, SteamNetConnectionRealTimeStatus pStatus, int nLanes,
-            SteamNetConnectionRealTimeLaneStatus[] pLanes)
+            Span<SteamNetConnectionRealTimeLaneStatus> pLanes)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionRealTimeStatus(_instance, hConn, ref pStatus,
                 nLanes, pLanes);
@@ -166,13 +166,13 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_SetConnectionPollGroup(_instance, hConn, hPollGroup);
         }
 
-        public int ReceiveMessagesOnPollGroup(uint hPollGroup, IntPtr[] ppOutMessages, int nMaxMessages)
+        public int ReceiveMessagesOnPollGroup(uint hPollGroup, Span<IntPtr> ppOutMessages, int nMaxMessages)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceiveMessagesOnPollGroup(_instance, hPollGroup,
                 ppOutMessages, nMaxMessages);
         }
 
-        public bool ReceivedRelayAuthTicket(byte[] pvTicket, int cbTicket, SteamDatagramRelayAuthTicket pOutParsedTicket)
+        public bool ReceivedRelayAuthTicket(ReadOnlySpan<byte> pvTicket, int cbTicket, SteamDatagramRelayAuthTicket pOutParsedTicket)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceivedRelayAuthTicket(_instance, pvTicket, cbTicket,
                 ref pOutParsedTicket);
@@ -186,7 +186,7 @@ namespace Valve.Sockets
         }
 
         public uint ConnectToHostedDedicatedServer(in SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
-            SteamNetworkingConfigValue[] pOptions)
+            ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectToHostedDedicatedServer(_instance, in identityTarget,
                 nRemoteVirtualPort, nOptions, pOptions);
@@ -208,40 +208,40 @@ namespace Valve.Sockets
         }
 
         public uint CreateHostedDedicatedServerListenSocket(int nLocalVirtualPort, int nOptions,
-            SteamNetworkingConfigValue[] pOptions)
+            ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_CreateHostedDedicatedServerListenSocket(_instance,
                 nLocalVirtualPort, nOptions, pOptions);
         }
 
         public EResult GetGameCoordinatorServerLogin(SteamDatagramGameCoordinatorServerLogin pLoginInfo, ref int pcbSignedBlob,
-            byte[] pBlob)
+            Span<byte> pBlob)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetGameCoordinatorServerLogin(_instance, ref pLoginInfo,
                 ref pcbSignedBlob, pBlob);
         }
 
         public uint ConnectP2PCustomSignaling(ISteamNetworkingConnectionSignaling pSignaling, SteamNetworkingIdentity pPeerIdentity,
-            int nRemoteVirtualPort, int nOptions, SteamNetworkingConfigValue[] pOptions)
+            int nRemoteVirtualPort, int nOptions, ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ConnectP2PCustomSignaling(_instance, ref pSignaling,
                 pPeerIdentity, nRemoteVirtualPort, nOptions, pOptions);
         }
 
-        public bool ReceivedP2PCustomSignal(byte[] pMsg, int cbMsg, ISteamNetworkingSignalingRecvContext pContext)
+        public bool ReceivedP2PCustomSignal(ReadOnlySpan<byte> pMsg, int cbMsg, ISteamNetworkingSignalingRecvContext pContext)
         {
             // TODO: Check if this is correct
             return Native.SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(_instance, pMsg, cbMsg,
                 ref pContext);
         }
 
-        public bool GetCertificateRequest(ref int pcbBlob, byte[] pBlob, ref SteamNetworkingErrMsg errMsg)
+        public bool GetCertificateRequest(ref int pcbBlob, Span<byte> pBlob, ref SteamNetworkingErrMsg errMsg)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(_instance, ref pcbBlob, pBlob,
                 ref errMsg);
         }
 
-        public bool SetCertificate(byte[] pCertificate, int cbCertificate, ref SteamNetworkingErrMsg errMsg)
+        public bool SetCertificate(ReadOnlySpan<byte> pCertificate, int cbCertificate, ref SteamNetworkingErrMsg errMsg)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_SetCertificate(_instance, pCertificate, cbCertificate,
                 ref errMsg);
@@ -267,7 +267,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, SteamNetworkingConfigValue[] pOptions)
+        public uint CreateListenSocketP2PFakeIP(int idxFakePort, int nOptions, ReadOnlySpan<SteamNetworkingConfigValue> pOptions)
         {
             throw new NotImplementedException();
         }

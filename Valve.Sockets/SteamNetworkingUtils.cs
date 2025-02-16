@@ -77,7 +77,7 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingUtils_GetPOPCount(_instance);
         }
 
-        public int GetPOPList(SteamNetworkingPOPID[] list, int nListSz)
+        public int GetPOPList(Span<SteamNetworkingPOPID> list, int nListSz)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_GetPOPList(_instance, list, nListSz);
         }
@@ -109,7 +109,7 @@ namespace Valve.Sockets
         }
 
         public bool SetConfigValue(ESteamNetworkingConfigValue eValue, ESteamNetworkingConfigScope eScopeType, nint scopeObj,
-            ESteamNetworkingConfigDataType eDataType, byte[] pArg)
+            ESteamNetworkingConfigDataType eDataType, ReadOnlySpan<byte> pArg)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_SetConfigValue(_instance, eValue, eScopeType, scopeObj,
                 eDataType, pArg);

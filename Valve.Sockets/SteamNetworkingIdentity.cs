@@ -130,7 +130,7 @@ namespace Valve.Sockets
             return m_eType == k_ESteamNetworkingIdentityType_GenericString ? Encoding.Default.GetString(Union.m_szGenericString.AsSpan()) : null;
         }
 
-        public bool SetGenericBytes(in byte[] data)
+        public bool SetGenericBytes(ReadOnlySpan<byte> data)
         {
             if (data.Length > 32)
             {
@@ -139,7 +139,7 @@ namespace Valve.Sockets
 
             m_eType = k_ESteamNetworkingIdentityType_GenericBytes;
             m_cbSize = data.Length;
-            data.AsSpan().CopyTo(Union.m_genericBytes.AsSpan());
+            data.CopyTo(Union.m_genericBytes.AsSpan());
             return true;
         }
         public byte[] GetGenericBytes(out int cbLen)
