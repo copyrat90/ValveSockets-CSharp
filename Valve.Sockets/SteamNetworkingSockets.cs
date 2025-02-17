@@ -79,15 +79,15 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_GetConnectionName(_instance, hPeer, pszName, nMaxLen);
         }
 
-        public EResult SendMessageToConnection(uint hConn, ReadOnlySpan<byte> pData, uint cbData, int nSendFlags, ref long pOutMessageNumber)
+        public EResult SendMessageToConnection(uint hConn, ReadOnlySpan<byte> pData, uint cbData, int nSendFlags, out long pOutMessageNumber)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_SendMessageToConnection(_instance, hConn, pData, cbData,
-                nSendFlags, ref pOutMessageNumber);
+                nSendFlags, out pOutMessageNumber);
         }
 
-        public void SendMessages(int nMessages, ReadOnlySpan<IntPtr> pMessages, ref long pOutMessageNumberOrResult)
+        public void SendMessages(int nMessages, ReadOnlySpan<IntPtr> pMessages, Span<long> pOutMessageNumberOrResult)
         {
-            Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, pMessages, ref pOutMessageNumberOrResult);
+            Native.SteamAPI_ISteamNetworkingSockets_SendMessages(_instance, nMessages, pMessages, pOutMessageNumberOrResult);
         }
 
         public EResult FlushMessagesOnConnection(uint hConn)
@@ -123,11 +123,11 @@ namespace Valve.Sockets
             return Native.SteamAPI_ISteamNetworkingSockets_GetListenSocketAddress(_instance, hSocket, ref address);
         }
 
-        public bool CreateSocketPair(ref HSteamNetConnection pOutConnection1, ref HSteamNetConnection pOutConnection2, bool bUseNetworkLoopback,
+        public bool CreateSocketPair(out HSteamNetConnection pOutConnection1, out HSteamNetConnection pOutConnection2, bool bUseNetworkLoopback,
             SteamNetworkingIdentity pIdentity1, SteamNetworkingIdentity pIdentity2)
         {
-            return Native.SteamAPI_ISteamNetworkingSockets_CreateSocketPair(_instance, ref pOutConnection1,
-                ref pOutConnection2, bUseNetworkLoopback, pIdentity1, pIdentity2);
+            return Native.SteamAPI_ISteamNetworkingSockets_CreateSocketPair(_instance, out pOutConnection1,
+                out pOutConnection2, bUseNetworkLoopback, pIdentity1, pIdentity2);
         }
 
         public EResult ConfigureConnectionLanes(uint hConn, int nNumLanes, ref int pLanePriorities, ref ushort pLaneWeights)
@@ -172,17 +172,17 @@ namespace Valve.Sockets
                 ppOutMessages, nMaxMessages);
         }
 
-        public bool ReceivedRelayAuthTicket(ReadOnlySpan<byte> pvTicket, int cbTicket, SteamDatagramRelayAuthTicket pOutParsedTicket)
+        public bool ReceivedRelayAuthTicket(ReadOnlySpan<byte> pvTicket, int cbTicket, out SteamDatagramRelayAuthTicket pOutParsedTicket)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_ReceivedRelayAuthTicket(_instance, pvTicket, cbTicket,
-                ref pOutParsedTicket);
+                out pOutParsedTicket);
         }
 
         public int FindRelayAuthTicketForServer(in SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort,
-            ref SteamDatagramRelayAuthTicket pOutParsedTicket)
+            out SteamDatagramRelayAuthTicket pOutParsedTicket)
         {
             return Native.SteamAPI_ISteamNetworkingSockets_FindRelayAuthTicketForServer(_instance, in identityGameServer,
-                nRemoteVirtualPort, ref pOutParsedTicket);
+                nRemoteVirtualPort, out pOutParsedTicket);
         }
 
         public uint ConnectToHostedDedicatedServer(in SteamNetworkingIdentity identityTarget, int nRemoteVirtualPort, int nOptions,
@@ -272,7 +272,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public EResult GetRemoteFakeIPForConnection(uint hConn, SteamNetworkingIPAddr pOutAddr)
+        public EResult GetRemoteFakeIPForConnection(uint hConn, out SteamNetworkingIPAddr pOutAddr)
         {
             throw new NotImplementedException();
         }

@@ -259,7 +259,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultLimitExceeded: there was already too much data queued to be sent.</para>
         /// <para>(See k_ESteamNetworkingConfig_SendBufferSize)</para>
         /// </remarks>
-        global::Valve.Sockets.EResult SendMessageToConnection(uint hConn, ReadOnlySpan<byte> pData, uint cbData, int nSendFlags, ref long pOutMessageNumber);
+        global::Valve.Sockets.EResult SendMessageToConnection(uint hConn, ReadOnlySpan<byte> pData, uint cbData, int nSendFlags, out long pOutMessageNumber);
 
         /// <summary>
         /// <para>Send one or more messages without copying the message payload.</para>
@@ -292,7 +292,7 @@ namespace Valve.Sockets
         /// <para>See ISteamNetworkingSockets::SendMessageToConnection for possible</para>
         /// <para>failure codes.</para>
         /// </remarks>
-        void SendMessages(int nMessages, ReadOnlySpan<IntPtr> pMessages, ref long pOutMessageNumberOrResult);
+        void SendMessages(int nMessages, ReadOnlySpan<IntPtr> pMessages, Span<long> pOutMessageNumberOrResult);
 
         /// <summary>
         /// <para>Flush any messages waiting on the Nagle timer and send them</para>
@@ -391,7 +391,7 @@ namespace Valve.Sockets
         /// <para>"localhost" identity.  If you use real network loopback, this might be translated to the</para>
         /// <para>actual bound loopback port.  Otherwise, the port will be zero.</para>
         /// </remarks>
-        bool CreateSocketPair(ref HSteamNetConnection pOutConnection1, ref HSteamNetConnection pOutConnection2, bool bUseNetworkLoopback, global::Valve.Sockets.SteamNetworkingIdentity pIdentity1, global::Valve.Sockets.SteamNetworkingIdentity pIdentity2);
+        bool CreateSocketPair(out HSteamNetConnection pOutConnection1, out HSteamNetConnection pOutConnection2, bool bUseNetworkLoopback, global::Valve.Sockets.SteamNetworkingIdentity pIdentity1, global::Valve.Sockets.SteamNetworkingIdentity pIdentity2);
 
         /// <summary>
         /// <para>Configure multiple outbound messages streams ("lanes") on a connection, and</para>
@@ -559,7 +559,7 @@ namespace Valve.Sockets
         /// <para>ticket into a persistent cache, and optionally returns the parsed ticket.</para>
         /// </summary>
         /// <remarks>See stamdatagramicketgen.h for more details.</remarks>
-        bool ReceivedRelayAuthTicket(ReadOnlySpan<byte> pvTicket, int cbTicket, global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
+        bool ReceivedRelayAuthTicket(ReadOnlySpan<byte> pvTicket, int cbTicket, out global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         /// <summary>
         /// <para>Search cache for a ticket to talk to the server on the specified virtual port.</para>
@@ -570,7 +570,7 @@ namespace Valve.Sockets
         /// <para>Typically this is useful just to confirm that you have a ticket, before you</para>
         /// <para>call ConnectToHostedDedicatedServer to connect to the server.</para>
         /// </remarks>
-        int FindRelayAuthTicketForServer(in global::Valve.Sockets.SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort, ref global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
+        int FindRelayAuthTicketForServer(in global::Valve.Sockets.SteamNetworkingIdentity identityGameServer, int nRemoteVirtualPort, out global::Valve.Sockets.SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         /// <summary>
         /// <para>Client call to connect to a server hosted in a Valve data center, on the specified virtual</para>
@@ -863,7 +863,7 @@ namespace Valve.Sockets
         /// <para>- k_EResultInvalidParam: invalid connection handle</para>
         /// <para>- k_EResultIPNotFound: This connection wasn't made using FakeIP system</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetRemoteFakeIPForConnection(uint hConn, global::Valve.Sockets.SteamNetworkingIPAddr pOutAddr);
+        global::Valve.Sockets.EResult GetRemoteFakeIPForConnection(uint hConn, out global::Valve.Sockets.SteamNetworkingIPAddr pOutAddr);
 
         /// <summary>
         /// <para>Get an interface that can be used like a UDP port to send/receive</para>

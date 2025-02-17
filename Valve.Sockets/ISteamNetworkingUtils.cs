@@ -236,7 +236,7 @@ namespace Valve.Sockets
         /// <para>real identity of a connection very soon after it is destroyed.  But do not wait</para>
         /// <para>indefinitely.</para>
         /// </remarks>
-        global::Valve.Sockets.EResult GetRealIdentityForFakeIP(global::Valve.Sockets.SteamNetworkingIPAddr fakeIP, global::Valve.Sockets.SteamNetworkingIdentity pOutRealIdentity);
+        global::Valve.Sockets.EResult GetRealIdentityForFakeIP(global::Valve.Sockets.SteamNetworkingIPAddr fakeIP, out global::Valve.Sockets.SteamNetworkingIdentity pOutRealIdentity);
 
         /// <summary>
         /// <para>Set a configuration value.</para>
@@ -269,14 +269,14 @@ namespace Valve.Sockets
         /// <para>- pResult: Where to put the result.  Pass NULL to query the required buffer size.  (k_ESteamNetworkingGetConfigValue_BufferTooSmall will be returned.)</para>
         /// <para>- cbResult: IN: the size of your buffer.  OUT: the number of bytes filled in or required.</para>
         /// </summary>
-        global::Valve.Sockets.ESteamNetworkingGetConfigValueResult GetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, ref global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, __IntPtr pResult, ref ulong cbResult);
+        global::Valve.Sockets.ESteamNetworkingGetConfigValueResult GetConfigValue(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, global::Valve.Sockets.ESteamNetworkingConfigScope eScopeType, nint scopeObj, out global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, __IntPtr pResult, ref ulong cbResult);
 
         /// <summary>
         /// <para>Get info about a configuration value.  Returns the name of the value,</para>
         /// <para>or NULL if the value doesn't exist.  Other output parameters can be NULL</para>
         /// <para>if you do not need them.</para>
         /// </summary>
-        string GetConfigValueInfo(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, ref global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, ref global::Valve.Sockets.ESteamNetworkingConfigScope pOutScope);
+        string GetConfigValueInfo(global::Valve.Sockets.ESteamNetworkingConfigValue eValue, out global::Valve.Sockets.ESteamNetworkingConfigDataType pOutDataType, out global::Valve.Sockets.ESteamNetworkingConfigScope pOutScope);
 
         /// <summary>
         /// <para>Iterate the list of all configuration values in the current environment that it might</para>

@@ -103,7 +103,7 @@ namespace Valve.Sockets
             throw new NotImplementedException();
         }
 
-        public EResult GetRealIdentityForFakeIP(SteamNetworkingIPAddr fakeIP, SteamNetworkingIdentity pOutRealIdentity)
+        public EResult GetRealIdentityForFakeIP(SteamNetworkingIPAddr fakeIP, out SteamNetworkingIdentity pOutRealIdentity)
         {
             throw new NotImplementedException();
         }
@@ -121,18 +121,18 @@ namespace Valve.Sockets
         }
 
         public ESteamNetworkingGetConfigValueResult GetConfigValue(ESteamNetworkingConfigValue eValue,
-            ESteamNetworkingConfigScope eScopeType, nint scopeObj, ref ESteamNetworkingConfigDataType pOutDataType,
+            ESteamNetworkingConfigScope eScopeType, nint scopeObj, out ESteamNetworkingConfigDataType pOutDataType,
             nint pResult, ref ulong cbResult)
         {
             return Native.SteamAPI_ISteamNetworkingUtils_GetConfigValue(_instance, eValue, eScopeType, scopeObj,
-                ref pOutDataType, pResult, ref cbResult);
+                out pOutDataType, pResult, ref cbResult);
         }
 
-        public string GetConfigValueInfo(ESteamNetworkingConfigValue eValue, ref ESteamNetworkingConfigDataType pOutDataType,
-            ref ESteamNetworkingConfigScope pOutScope)
+        public string GetConfigValueInfo(ESteamNetworkingConfigValue eValue, out ESteamNetworkingConfigDataType pOutDataType,
+            out ESteamNetworkingConfigScope pOutScope)
         {
-            return Native.SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo(_instance, eValue, ref pOutDataType,
-                ref pOutScope);
+            return Native.SteamAPI_ISteamNetworkingUtils_GetConfigValueInfo(_instance, eValue, out pOutDataType,
+                out pOutScope);
         }
 
         public ESteamNetworkingConfigValue IterateGenericEditableConfigValues(ESteamNetworkingConfigValue eCurrent,
