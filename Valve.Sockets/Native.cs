@@ -46,11 +46,11 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamNetworkingIPAddr_ToString(in SteamNetworkingIPAddr pAddr,[MarshalAs(UnmanagedType.LPStr)] string buf,UIntPtr cbBuf,[MarshalAs(UnmanagedType.Bool)] bool bWithPort);
+        public static partial void SteamNetworkingIPAddr_ToString(in SteamNetworkingIPAddr pAddr,[MarshalAs(UnmanagedType.LPStr)] string buf,UIntPtr cbBuf,[MarshalAs(UnmanagedType.I1)] bool bWithPort);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamNetworkingIPAddr_ParseString(ref SteamNetworkingIPAddr pAddr,[MarshalAs(UnmanagedType.LPStr)] string pszStr);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -63,7 +63,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamNetworkingIdentity_ParseString(ref SteamNetworkingIdentity pIdentity,UIntPtr sizeofIdentity,[MarshalAs(UnmanagedType.LPStr)] string pszStr);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -126,12 +126,12 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool GameNetworkingSockets_Init(IntPtr pIdentity, ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool GameNetworkingSockets_Init(in SteamNetworkingIdentity pIdentity,ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -180,17 +180,17 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool SteamAPI_ISteamNetworkingSockets_CloseConnection(IntPtr self,uint hPeer,int nReason,[MarshalAs(UnmanagedType.LPStr)] string pszDebug,[MarshalAs(UnmanagedType.Bool)] bool bEnableLinger);
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static partial bool SteamAPI_ISteamNetworkingSockets_CloseConnection(IntPtr self,uint hPeer,int nReason,[MarshalAs(UnmanagedType.LPStr)] string pszDebug,[MarshalAs(UnmanagedType.I1)] bool bEnableLinger);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_CloseListenSocket(IntPtr self,uint hSocket);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_SetConnectionUserData(IntPtr self,uint hPeer,long nUserData);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -203,7 +203,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_GetConnectionName(IntPtr self,uint hPeer,[MarshalAs(UnmanagedType.LPStr)] string pszName,int nMaxLen);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -224,7 +224,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_GetConnectionInfo(IntPtr self,uint hConn,ref SteamNetConnectionInfo pInfo);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -237,13 +237,13 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_GetListenSocketAddress(IntPtr self,uint hSocket,ref SteamNetworkingIPAddr address);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static partial bool SteamAPI_ISteamNetworkingSockets_CreateSocketPair(IntPtr self,ref HSteamNetConnection pOutConnection1,ref HSteamNetConnection pOutConnection2,[MarshalAs(UnmanagedType.Bool)] bool bUseNetworkLoopback,in SteamNetworkingIdentity pIdentity1,in SteamNetworkingIdentity pIdentity2);
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static partial bool SteamAPI_ISteamNetworkingSockets_CreateSocketPair(IntPtr self,ref HSteamNetConnection pOutConnection1,ref HSteamNetConnection pOutConnection2,[MarshalAs(UnmanagedType.I1)] bool bUseNetworkLoopback,in SteamNetworkingIdentity pIdentity1,in SteamNetworkingIdentity pIdentity2);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -251,7 +251,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_GetIdentity(IntPtr self,ref SteamNetworkingIdentity pIdentity);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -268,12 +268,12 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_DestroyPollGroup(IntPtr self,uint hPollGroup);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_SetConnectionPollGroup(IntPtr self,uint hConn,uint hPollGroup);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -282,7 +282,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_ReceivedRelayAuthTicket(IntPtr self,ReadOnlySpan<byte> pvTicket,int cbTicket,ref SteamDatagramRelayAuthTicket pOutParsedTicket);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -319,17 +319,17 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal(IntPtr self,[MarshalUsing(CountElementName = nameof(cbMsg))]ReadOnlySpan<byte> pMsg,int cbMsg,ref ISteamNetworkingSignalingRecvContext pContext);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_GetCertificateRequest(IntPtr self,ref int pcbBlob,[MarshalUsing(CountElementName = nameof(pcbBlob))]Span<byte> pBlob, ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_SetCertificate(IntPtr self,ReadOnlySpan<byte> pCertificate,int cbCertificate,ref SteamNetworkingErrMsg errMsg);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -370,12 +370,12 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_ParsePingLocationString(IntPtr self,[MarshalAs(UnmanagedType.LPStr)] string pszString,ref SteamNetworkPingLocation result);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_CheckPingDataUpToDate(IntPtr self,float flMaxAgeSeconds);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -404,62 +404,62 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueInt32(IntPtr self,ESteamNetworkingConfigValue eValue,int val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueFloat(IntPtr self,ESteamNetworkingConfigValue eValue,float val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValueString(IntPtr self,ESteamNetworkingConfigValue eValue,[MarshalAs(UnmanagedType.LPStr)] string val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalConfigValuePtr(IntPtr self,ESteamNetworkingConfigValue eValue,byte val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueInt32(IntPtr self,uint hConn,ESteamNetworkingConfigValue eValue,int val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueFloat(IntPtr self,uint hConn,ESteamNetworkingConfigValue eValue,float val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetConnectionConfigValueString(IntPtr self,uint hConn,ESteamNetworkingConfigValue eValue,[MarshalAs(UnmanagedType.LPStr)] string val);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetConnectionStatusChanged(IntPtr self,IntPtr fnCallback);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamNetAuthenticationStatusChanged(IntPtr self,IntPtr fnCallback);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetGlobalCallback_SteamRelayNetworkStatusChanged(IntPtr self,IntPtr fnCallback);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetConfigValue(IntPtr self,ESteamNetworkingConfigValue eValue,ESteamNetworkingConfigScope eScopeType,IntPtr scopeObj,ESteamNetworkingConfigDataType eDataType,ReadOnlySpan<byte> pArg);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingUtils_SetConfigValueStruct(IntPtr self,in SteamNetworkingConfigValue opt,ESteamNetworkingConfigScope eScopeType,IntPtr scopeObj);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -473,7 +473,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial ESteamNetworkingConfigValue SteamAPI_ISteamNetworkingUtils_IterateGenericEditableConfigValues(IntPtr self,ESteamNetworkingConfigValue eCurrent,[MarshalAs(UnmanagedType.Bool)] bool bEnumerateDevVars);
+        public static partial ESteamNetworkingConfigValue SteamAPI_ISteamNetworkingUtils_IterateGenericEditableConfigValues(IntPtr self,ESteamNetworkingConfigValue eCurrent,[MarshalAs(UnmanagedType.I1)] bool bEnumerateDevVars);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
@@ -481,7 +481,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIPAddr_IsIPv6AllZeros(ref SteamNetworkingIPAddr self);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -494,7 +494,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIPAddr_IsIPv4(ref SteamNetworkingIPAddr self);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -507,21 +507,21 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIPAddr_IsLocalHost(ref SteamNetworkingIPAddr self);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIPAddr_IsEqualTo(ref SteamNetworkingIPAddr self,in SteamNetworkingIPAddr x);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        public static partial void SteamAPI_SteamNetworkingIPAddr_ToString(in SteamNetworkingIPAddr self,[MarshalAs(UnmanagedType.LPStr)] string buf,UIntPtr cbBuf,[MarshalAs(UnmanagedType.Bool)] bool bWithPort);
+        public static partial void SteamAPI_SteamNetworkingIPAddr_ToString(in SteamNetworkingIPAddr self,[MarshalAs(UnmanagedType.LPStr)] string buf,UIntPtr cbBuf,[MarshalAs(UnmanagedType.I1)] bool bWithPort);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIPAddr_ParseString(ref SteamNetworkingIPAddr self,[MarshalAs(UnmanagedType.LPStr)] string pszStr);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -530,7 +530,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_IsInvalid(ref SteamNetworkingIdentity self);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -563,12 +563,12 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_IsLocalHost(ref SteamNetworkingIdentity self);
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_SetGenericString(ref SteamNetworkingIdentity self,[MarshalAs(UnmanagedType.LPStr)] string pszString);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -577,7 +577,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_SetGenericBytes(ref SteamNetworkingIdentity self,ReadOnlySpan<byte> data,uint cbLen);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -586,7 +586,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_IsEqualTo(ref SteamNetworkingIdentity self,in SteamNetworkingIdentity x);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -595,7 +595,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_SteamNetworkingIdentity_ParseString(ref SteamNetworkingIdentity self,UIntPtr sizeofIdentity,[MarshalAs(UnmanagedType.LPStr)] string pszStr);
 
         [LibraryImport("GameNetworkingSockets")]
@@ -608,7 +608,7 @@ namespace Valve.Sockets
 
         [LibraryImport("GameNetworkingSockets")]
         [UnmanagedCallConv(CallConvs=new [] { typeof(CallConvCdecl) })]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [return: MarshalAs(UnmanagedType.I1)]
         public static partial bool SteamAPI_ISteamNetworkingSockets_ReceivedP2PCustomSignal2(IntPtr self,ReadOnlySpan<byte> pMsg,int cbMsg,Span<byte> ctx,IntPtr fnOnConnectRequest,IntPtr fnSendRejectionSignal);
         public const uint k_HSteamNetConnection_Invalid = 0;
         public const uint k_HSteamListenSocket_Invalid = 0;
