@@ -86,7 +86,7 @@ namespace LibraryGenerator.SyntaxRewriter
                     break;
                 case "string":
                     argumentList = argumentList.Add(SyntaxFactory.AttributeArgument(
-                        SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("LPStr")))
+                        SyntaxFactory.QualifiedName(unmanagedTypeName, SyntaxFactory.IdentifierName("LPUTF8Str")))
                     );
                     break;
             }
