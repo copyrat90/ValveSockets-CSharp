@@ -2,7 +2,7 @@ using System;
 
 namespace Valve.Sockets
 {
-    public class GameNetworkingSockets : IDisposable
+    public sealed class GameNetworkingSockets : IDisposable
     {
         private readonly SteamNetworkingErrMsg _errMsg;
 
@@ -32,16 +32,20 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!_disposed)
             {
-                // No managed resource here
+                if (disposing)
+                {
+                    // No managed resource here
+                }
+
+                // Unmanaged resource cleanup
+                Native.GameNetworkingSockets_Kill();
+
                 _disposed = true;
             }
-
-            // Unmanaged resource cleanup
-            Native.GameNetworkingSockets_Kill();
         }
     }
 }
