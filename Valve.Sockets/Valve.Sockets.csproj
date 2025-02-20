@@ -6,10 +6,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IsPackable>true</IsPackable>
 
-        <PackageId>Valve.Sockets.AutoGen</PackageId>
-        <Title>Valve.Sockets.AutoGen</Title>
+        <PackageId>Valve.Sockets.Regen</PackageId>
+        <Title>Valve.Sockets.Regen</Title>
         <Description>Mostly auto-generated C# bindings for GameNetworkingSockets by Valve Software.</Description>
-        <RepositoryUrl>https://github.com/TSRBerry/ValveSockets-CSharp</RepositoryUrl>
+        <RepositoryUrl>https://github.com/copyrat90/Valve.Sockets.Regen</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
