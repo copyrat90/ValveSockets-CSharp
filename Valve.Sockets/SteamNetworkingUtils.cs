@@ -16,9 +16,9 @@ namespace Valve.Sockets
             GC.SuppressFinalize(this);
         }
 
-        public SteamNetworkingMessage AllocateMessage(int cbAllocateBuffer)
+        public IntPtr AllocateMessage(int cbAllocateBuffer)
         {
-            return Marshal.PtrToStructure<SteamNetworkingMessage>(Native.SteamAPI_ISteamNetworkingUtils_AllocateMessage(_instance, cbAllocateBuffer));
+            return Native.SteamAPI_ISteamNetworkingUtils_AllocateMessage(_instance, cbAllocateBuffer);
         }
 
         public void InitRelayNetworkAccess()

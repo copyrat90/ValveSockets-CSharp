@@ -35,7 +35,7 @@ namespace Valve.Sockets
         /// <para>m_cbSize will be zero, and m_pfnFreeData will be NULL.  You will need to</para>
         /// <para>set each of these.</para>
         /// </remarks>
-        global::Valve.Sockets.SteamNetworkingMessage AllocateMessage(int cbAllocateBuffer);
+        IntPtr AllocateMessage(int cbAllocateBuffer);
 
         /// <summary>
         /// <para>If you know that you are going to be using the relay network (for example,</para>
